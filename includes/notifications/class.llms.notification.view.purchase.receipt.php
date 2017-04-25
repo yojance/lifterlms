@@ -1,12 +1,13 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
  * Notification View: Purchase Receipt
  * @since    [version]
  * @version  [version]
+ * @package  LifterLMS\Views
+ * @author   LifterLMS
  */
-
-if ( ! defined( 'ABSPATH' ) ) { exit; }
-
 class LLMS_Notification_View_Purchase_Receipt extends LLMS_Abstract_Notification_View {
 
 	/**

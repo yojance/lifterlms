@@ -1,12 +1,14 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
  * Notification Controller: Lesson Complete
  * @since    [version]
  * @version  [version]
+ * @package  LifterLMS\Controllers
+ * @author   LifterLMS
  */
-
-if ( ! defined( 'ABSPATH' ) ) { exit; }
-
 class LLMS_Notification_Controller_Lesson_Complete extends LLMS_Abstract_Notification_Controller {
 
 	/**

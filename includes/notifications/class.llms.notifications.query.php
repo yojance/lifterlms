@@ -1,12 +1,13 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
 * Query LifterLMS Students for a given course / membership
 * @since    ??
 * @version  ??
+ * @package  LifterLMS\Queries
+ * @author   LifterLMS
 */
-
-if ( ! defined( 'ABSPATH' ) ) { exit; }
-
 class LLMS_Notifications_Query extends LLMS_Database_Query {
 
 	/**

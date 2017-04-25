@@ -1,13 +1,15 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
  * Notification Background Processor: Emails
  *
  * @since    [version]
  * @version  [version]
+ * @package  LifterLMS\Processors
+ * @author   LifterLMS
  */
-
-if ( ! defined( 'ABSPATH' ) ) { exit; }
-
 class LLMS_Notification_Processor_Email extends LLMS_Abstract_Notification_Processor {
 
 	/**
