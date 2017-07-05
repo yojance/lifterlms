@@ -60,6 +60,12 @@ var LLMS = window.LLMS || {};
 		}, cb );
 	}
 
+	LLMS.wait_for_player = function( cb ) {
+		this.wait_for( function() {
+			return ( 'undefined' !== window.llms.Player );
+		}, cb );
+	}
+
 	/**
 	 * Wait for a dependency to load and then run a callback once it has
 	 * Temporary fix for a less-than-optimal assets loading function on the PHP side of things

@@ -168,6 +168,10 @@ class LLMS_Frontend_Assets {
 			self::enqueue_inline_pw_script();
 		}
 
+		if ( is_lesson() ) {
+			wp_enqueue_script( 'llms-player', plugins_url( '/assets/js/llms-player' . LLMS_Frontend_Assets::$min . '.js', LLMS_PLUGIN_FILE ), array( 'jquery', 'llms' ), '', true );
+		}
+
 		$ssl = is_ssl() ? 'https' : 'http';
 		self::enqueue_inline_script(
 			'llms-ajaxurl',

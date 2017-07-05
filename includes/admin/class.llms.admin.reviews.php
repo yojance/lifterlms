@@ -102,8 +102,8 @@ class LLMS_Admin_Reviews {
 		$fields = array(
 			array(
 					'type'		=> 'checkbox',
-					'label'		=> 'Enable Reviews',
-					'desc' 		=> 'Select to enable reviews.',
+					'label'		=> __( 'Enable Reviews', 'lifterlms' ),
+					'desc' 		=> __( 'Select to enable reviews.', 'lifterlms' ),
 					'id' 		=> self::$prefix . 'llms_reviews_enabled',
 					'class' 	=> '',
 					'value' 	=> '1',
@@ -112,8 +112,8 @@ class LLMS_Admin_Reviews {
 			),
 			array(
 					'type'		=> 'checkbox',
-					'label'		=> 'Display Reviews',
-					'desc' 		=> 'Select to display reviews on the page.',
+					'label'		=> __( 'Display Reviews', 'lifterlms' ),
+					'desc' 		=> __( 'Select to display reviews on the page.', 'lifterlms' ),
 					'id' 		=> self::$prefix . 'llms_display_reviews',
 					'class' 	=> 'llms-num-reviews-top',
 					'value' 	=> '1',
@@ -123,8 +123,8 @@ class LLMS_Admin_Reviews {
 			array(
 					'type'		=> 'number',
 					'min'		=> '0',
-					'label'		=> 'Number of Reviews',
-					'desc' 		=> 'Number of reviews to display on the page.',
+					'label'		=> __( 'Number of Reviews', 'lifterlms' ),
+					'desc' 		=> __( 'Number of reviews to display on the page.', 'lifterlms' ),
 					'id' 		=> self::$prefix . 'llms_num_reviews',
 					'class' 	=> 'input-full',
 					'value' 	=> '',
@@ -133,8 +133,8 @@ class LLMS_Admin_Reviews {
 			),
 			array(
 					'type'		=> 'checkbox',
-					'label'		=> 'Prevent Multiple Reviews',
-					'desc' 		=> 'Select to prevent a user from submitting more than one review.',
+					'label'		=> __( 'Prevent Multiple Reviews', 'lifterlms' ),
+					'desc' 		=> __( 'Select to prevent a user from submitting more than one review.', 'lifterlms' ),
 					'id' 		=> self::$prefix . 'llms_multiple_reviews_disabled',
 					'class' 	=> '',
 					'value' 	=> '1',
