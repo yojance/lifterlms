@@ -25,7 +25,7 @@ class LLMS_Shortcode_My_Account {
 	* Lost password template
 	* @return   void
 	* @since    1.0.0
-	* @version  [version]
+	* @version  3.8.0
 	*/
 	public static function lost_password() {
 
@@ -60,6 +60,9 @@ class LLMS_Shortcode_My_Account {
 
 		global $wp;
 
+		/**
+		 * @hooked lifterlms_template_student_dashboard_wrapper_open - 10
+		 */
 		do_action( 'lifterlms_before_student_dashboard' );
 
 		// If user is not logged in
@@ -91,10 +94,8 @@ class LLMS_Shortcode_My_Account {
 					llms_get_template( 'global/form-registration.php' );
 
 				}
-
 			}
-
-		} // If user is logged in, display the correct page
+		} // End if().
 		else {
 
 			$tabs = LLMS_Student_Dashboard::get_tabs();
@@ -102,8 +103,7 @@ class LLMS_Shortcode_My_Account {
 			$current_tab = LLMS_Student_Dashboard::get_current_tab( 'slug' );
 
 			/**
-			 * @hooked lifterlms_template_my_account_navigation - 10
-			 * @hooked lifterlms_template_student_dashboard_title - 20
+			 * @hooked lifterlms_template_student_dashboard_header - 10
 			 */
 			do_action( 'lifterlms_before_student_dashboard_content' );
 
@@ -112,9 +112,11 @@ class LLMS_Shortcode_My_Account {
 				call_user_func( $tabs[ $current_tab ]['content'] );
 
 			}
-
 		}
 
+		/**
+		 * @hooked lifterlms_template_student_dashboard_wrapper_close - 10
+		 */
 		do_action( 'lifterlms_after_student_dashboard' );
 
 	}

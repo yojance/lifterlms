@@ -1,6 +1,8 @@
 <?php
 /**
 * Admin Settings Page, Accounts Tab
+* @since    1.0.0
+* @version  3.8.0
 */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -33,7 +35,7 @@ class LLMS_Settings_Accounts extends LLMS_Settings_Page {
 	 * Get settings array
 	 * @return  array
 	 * @since   1.0.0
-	 * @version 3.6.0
+	 * @version 3.8.0
 	 */
 	public function get_settings() {
 
@@ -78,6 +80,24 @@ class LLMS_Settings_Accounts extends LLMS_Settings_Page {
 				'id' 		=> 'lifterlms_myaccount_courses_endpoint',
 				'type' 		=> 'text',
 				'default'	=> 'my-courses',
+				'desc_tip'	=> true,
+			),
+
+			array(
+				'title' => __( 'View Achievements', 'lifterlms' ),
+				'desc' 		=> '<br>' . __( 'List of all the student\'s achievements', 'lifterlms' ),
+				'id' 		=> 'lifterlms_myaccount_achievements_endpoint',
+				'type' 		=> 'text',
+				'default'	=> 'my-achievements',
+				'desc_tip'	=> true,
+			),
+
+			array(
+				'title' => __( 'Notifications', 'lifterlms' ),
+				'desc' 		=> '<br>' . __( 'View Notifications and adjust notification settings', 'lifterlms' ),
+				'id' 		=> 'lifterlms_myaccount_notifications_endpoint',
+				'type' 		=> 'text',
+				'default'	=> 'notifications',
 				'desc_tip'	=> true,
 			),
 

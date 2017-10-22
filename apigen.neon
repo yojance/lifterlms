@@ -5,7 +5,8 @@ destination: ./tmp/docs
 # templateConfig:
 
 # list of scanned file extensions (e.g. php5, phpt...)
-extensions: [php]
+extensions:
+  - php
 
 # directories and files matching this file mask will not be parsed
 exclude:

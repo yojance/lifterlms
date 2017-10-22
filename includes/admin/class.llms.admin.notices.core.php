@@ -2,8 +2,8 @@
 /**
  * Manage core admin notices
  *
- * @since 3.0.0
- * @version  3.0.0
+ * @since    3.0.0
+ * @version  3.13.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -51,13 +51,14 @@ class LLMS_Admin_Notices_Core {
 	 * from the button on the general settings tab
 	 * @return   void
 	 * @since    3.0.0
-	 * @version  3.0.0
+	 * @version  3.7.4
 	 */
 	public static function check_staging() {
 
 		$id = 'maybe-staging';
 
 		if ( isset( $_GET['llms-staging-status'] ) && isset( $_GET['_llms_staging_nonce'] ) ) {
+
 			if ( ! wp_verify_nonce( $_GET['_llms_staging_nonce'], 'llms_staging_status' ) ) {
 				wp_die( __( 'Action failed. Please refresh the page and retry.', 'lifterlms' ) );
 			}
@@ -78,7 +79,12 @@ class LLMS_Admin_Notices_Core {
 
 		}
 
-		if ( ! LLMS_Site::is_clone_ignored() && ! LLMS_Admin_Notices::has_notice( $id ) && ( LLMS_Site::is_clone() ) ) {
+		if ( ! LLMS_Site::is_clone_ignored() && ! LLMS_Admin_Notices::has_notice( $id ) && LLMS_Site::is_clone() ) {
+
+			do_action( 'llms_site_clone_detected' );
+
+			// disable recurring payments immediately
+			LLMS_Site::update_feature( 'recurring_payments', false );
 
 			LLMS_Admin_Notices::add_notice( $id, array(
 				'type' => 'info',
@@ -95,13 +101,17 @@ class LLMS_Admin_Notices_Core {
 	 * Check for gateways and output gateway notice
 	 * @return   void
 	 * @since    3.0.0
-	 * @version  3.0.0
+	 * @version  3.13.0
 	 */
 	public static function gateways() {
 		$id = 'no-gateways';
-		if ( ! LLMS()->payment_gateways()->has_gateways( true ) ) {
+
+		if ( ! apply_filters( 'llms_admin_notice_no_payment_gateways', LLMS()->payment_gateways()->has_gateways( true ) ) ) {
 			$html = __( 'No LifterLMS Payment Gateways are currently enabled. Students will only be able to enroll in courses or memberships with free access plans.', 'lifterlms' ) . '<br><br>';
-			$html .= sprintf( __( 'For starters you can configure manual payments on the %1$sCheckout Settings tab%2$s. Be sure to check out all the available %3$sLifterLMS Payment Gateways%4$s and install one later so that you can start selling your courses and memberships.', 'lifterlms' ), '<a href="' . add_query_arg( array( 'page' => 'llms-settings', 'tab' => 'checkout' ), admin_url( 'admin.php' ) ) . '">', '</a>', '<a href="https://lifterlms.com/product-category/plugins/payment-gateways/" target="_blank">', '</a>' );
+			$html .= sprintf( __( 'For starters you can configure manual payments on the %1$sCheckout Settings tab%2$s. Be sure to check out all the available %3$sLifterLMS Payment Gateways%4$s and install one later so that you can start selling your courses and memberships.', 'lifterlms' ), '<a href="' . add_query_arg( array(
+				'page' => 'llms-settings',
+				'tab' => 'checkout',
+			), admin_url( 'admin.php' ) ) . '">', '</a>', '<a href="https://lifterlms.com/product-category/plugins/payment-gateways/" target="_blank">', '</a>' );
 			LLMS_Admin_Notices::add_notice( $id, $html, array(
 				'type' => 'warning',
 				'dismiss_for_days' => 7,
@@ -117,7 +127,7 @@ class LLMS_Admin_Notices_Core {
 	 * Check theme support for LifterLMS Sidebars
 	 * @return   void
 	 * @since    3.0.0
-	 * @version  3.1.7
+	 * @version  3.7.4
 	 */
 	public static function sidebar_support() {
 

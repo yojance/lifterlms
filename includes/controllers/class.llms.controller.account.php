@@ -3,7 +3,7 @@
  * User Account Edit Forms
  *
  * @since   3.7.0
- * @version [version]
+ * @version 3.9.5
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -15,6 +15,37 @@ class LLMS_Controller_Account {
 		add_action( 'init', array( $this, 'update' ) );
 		add_action( 'init', array( $this, 'lost_password' ) );
 		add_action( 'init', array( $this, 'reset_password' ) );
+		add_action( 'init', array( $this, 'cancel_subscription' ) );
+
+	}
+
+	/**
+	 * Lets student cancel recurring access plan subscriptions from the student dashboard view order screen
+	 * @return   void
+	 * @since    3.10.0
+	 * @version  3.10.0
+	 */
+	public function cancel_subscription() {
+
+		// invalid nonce or the form wasn't submitted
+		if ( ! llms_verify_nonce( '_cancel_sub_nonce', 'llms_cancel_subscription', 'POST' ) ) {
+			return;
+		}
+
+		// verify required field
+		if ( empty( $_POST['order_id'] ) ) {
+			return llms_add_notice( __( 'Something went wrong. Please try again.', 'lifterlms' ), 'error' );
+		}
+
+		$order = llms_get_post( $_POST['order_id'] );
+		$uid = get_current_user_id();
+
+		if ( $uid != $order->get( 'user_id' ) ) {
+			return llms_add_notice( __( 'Something went wrong. Please try again.', 'lifterlms' ), 'error' );
+		}
+
+		$order->set_status( 'cancelled' );
+		$order->add_note( __( 'Cancelled by student from account page.', 'lifterlms' ) );
 
 	}
 
@@ -34,7 +65,7 @@ class LLMS_Controller_Account {
 		// this shouldn't happen but let's check anyway
 		if ( ! get_current_user_id() ) {
 			return llms_add_notice( __( 'Please log in and try again.', 'lifterlms' ), 'error' );
-		} // attempt to update new user (performs validations)
+		} // End if().
 		else {
 			$person_id = llms_update_user( $_POST, 'account' );
 		}
@@ -45,7 +76,7 @@ class LLMS_Controller_Account {
 				llms_add_notice( $msg, 'error' );
 			}
 			return;
-		} // update should be a user_id at this point, if we're not numeric we have a problem...
+		} // End if().
 		elseif ( ! is_numeric( $person_id ) ) {
 
 			return llms_add_notice( __( 'An unknown error occurred when attempting to create an account, please try again.', 'lirterlms' ), 'error' );
@@ -66,8 +97,8 @@ class LLMS_Controller_Account {
 	 * Handle form submission of the Lost Password form
 	 * This is the form that sends a password recovery email with a link to reset the password
 	 * @return   void
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.9.5
 	 */
 	public function lost_password() {
 
@@ -82,10 +113,25 @@ class LLMS_Controller_Account {
 		}
 
 		$login = trim( $_POST['llms_login'] );
-		$get_by = ( 'yes' === get_option( 'lifterlms_registration_generate_username' ) ) ? 'email' : 'login';
 
-		// make sure user exists
-		$user = get_user_by( $get_by, $login );
+		// always check email
+		$get_by = array( 'email' );
+		// add login if username generation is disabled (eg users create their own usernames)
+		if ( 'no' === get_option( 'lifterlms_registration_generate_username' ) ) {
+			$get_by[] = 'login';
+		}
+
+		$user = null;
+		// check each field to find the user
+		foreach ( $get_by as $field ) {
+			$user = get_user_by( $field, $login );
+			// if we find a user skip the next check
+			if ( $user ) {
+				break;
+			}
+		}
+
+		// if we don't have a user return an error
 		if ( ! $user ) {
 			return llms_add_notice( __( 'Invalid username or e-mail address.', 'lifterlms' ), 'error' );
 		}
@@ -105,26 +151,8 @@ class LLMS_Controller_Account {
 
 		}
 
-		// generate an activation key
-		$key = wp_generate_password( 20, false );
+		$key = llms_set_user_password_rest_key( $user->ID );
 
-		do_action( 'retrieve_password_key', $user->user_login, $key ); // wp core hook
-
-		// insert the hashed key into the db
-		if ( empty( $wp_hasher ) ) {
-			require_once ABSPATH . 'wp-includes/class-phpass.php';
-			$wp_hasher = new PasswordHash( 8, true );
-		}
-		$hashed = $wp_hasher->HashPassword( $key );
-
-		global $wpdb;
-		$wpdb->update(
-			$wpdb->users,
-			array( 'user_activation_key' => $hashed ),
-			array( 'user_login' => $user->user_login )
-		);
-
-		// send the email
 		// setup the email
 		$email = LLMS()->mailer()->get_email( 'reset_password', array(
 			'key' => $key,
@@ -132,13 +160,12 @@ class LLMS_Controller_Account {
 			'login_display' => 'email' === $get_by ? $user->user_email : $user->user_login,
 		) );
 
-
+		// send the email
 		if ( $email ) {
 
 			if ( $email->send() ) {
 				return llms_add_notice( __( 'Check your e-mail for the confirmation link.', 'lifterlms' ) );
 			}
-
 		}
 
 		return llms_add_notice( __( 'Unable to reset password due to an unknown error. Please try again.', 'lifterlms' ), 'error' );
@@ -149,8 +176,8 @@ class LLMS_Controller_Account {
 	 * Handle form submission of the Reset Password form
 	 * This is the form that actually updates a users password
 	 * @return   void
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	public function reset_password() {
 

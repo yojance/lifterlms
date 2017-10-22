@@ -4,7 +4,7 @@
 *
 * Handles queries and endpoints
 * @since   1.0.0
-* @version 3.6.0
+* @version 3.14.0
 */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -31,6 +31,7 @@ class LLMS_Query {
 
 			add_filter( 'query_vars', array( $this, 'set_query_vars' ), 0 );
 			add_action( 'parse_request', array( $this, 'parse_request' ), 0 );
+			add_action( 'wp', array( $this, 'set_dashboard_pagination' ), 10 );
 
 		}
 
@@ -80,7 +81,9 @@ class LLMS_Query {
 	private function get_tax_query( $query = array() ) {
 
 		if ( ! is_array( $query ) ) {
-			$query = array( 'relation' => 'AND' );
+			$query = array(
+				'relation' => 'AND',
+			);
 		}
 
 		$terms = wp_list_pluck(
@@ -200,12 +203,34 @@ class LLMS_Query {
 			// remove action when finished
 			remove_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
 
-		}
+		}// End if().
 
 		if ( $modify_tax_query ) {
 
 			$query->set( 'tax_query', $this->get_tax_query( $query->get( 'tax_query' ) ) );
 
+		}
+
+	}
+
+	/**
+	 * Handles setting the "paged" variable on Student Dashboard endpoints
+	 * which utilize page/{n} style pagination
+	 * @return   void
+	 * @since    3.14.0
+	 * @version  3.14.0
+	 */
+	public function set_dashboard_pagination() {
+
+		$tab = LLMS_Student_Dashboard::get_current_tab( 'slug' );
+		$var = get_query_var( $tab );
+		if ( $var ) {
+			global $wp_rewrite;
+			$paged = explode( '/', $var );
+			// this should work on localized sites
+			if ( $wp_rewrite->pagination_base === $paged[0] ) {
+				set_query_var( 'paged', $paged[1] );
+			}
 		}
 
 	}
@@ -219,7 +244,9 @@ class LLMS_Query {
 
 		foreach ( $this->get_query_vars() as $key => $var ) {
 
-			$vars[] = $key; }
+			$vars[] = $key;
+
+		}
 
 		return $vars;
 

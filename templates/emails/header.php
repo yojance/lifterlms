@@ -2,13 +2,13 @@
 /**
  * LifterLMS Email Header Template
  * @since    1.0.0
- * @version  [version]
+ * @version  3.10.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 $mailer = LLMS()->mailer();
-
+$header_image = $mailer->get_header_image_src();
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 	<head>
@@ -65,6 +65,7 @@ $mailer = LLMS()->mailer();
 				border-left-width: 0 !important;
 				border-radius: 0 !important;
 				border-right-width: 0 !important; } }
+		<?php do_action( 'llms_email_after_css' ); ?>
 		</style>
 	</head>
 	<body class="" style="background-color:<?php $mailer->get_css( 'background-color' ); ?>;color:<?php $mailer->get_css( 'font-color' ); ?>;font-family:<?php $mailer->get_css( 'font-family' ); ?>;-webkit-font-smoothing:antialiased;font-size:<?php $mailer->get_css( 'font-size' ); ?>;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
@@ -73,7 +74,7 @@ $mailer = LLMS()->mailer();
 				<td style="font-family:<?php $mailer->get_css( 'font-family' ); ?>;font-size:<?php $mailer->get_css( 'font-size' ); ?>;vertical-align:top;">&nbsp;</td>
 				<td class="container" style="font-family:<?php $mailer->get_css( 'font-family' ); ?>;font-size:<?php $mailer->get_css( 'font-size' ); ?>;vertical-align:top;display:block;max-width:<?php $mailer->get_css( 'max-width' ); ?>;padding:10px;width:<?php $mailer->get_css( 'max-width' ); ?>;Margin:0 auto !important;">
 
-					<?php if ( $header_image = get_option( 'lifterlms_email_header_image' ) ) : ?>
+					<?php if ( $header_image ) : ?>
 					<div class="content" style="box-sizing:border-box;display:block;Margin:0 auto;max-width:<?php $mailer->get_css( 'max-width' ); ?>;padding:10px;">
 						<img alt="<?php echo get_bloginfo( 'name' ); ?>" src="<?php echo esc_url( $header_image ); ?>" style="display:block;height:auto;Margin:0 auto;max-width:100%;" />
 					</div>
@@ -81,8 +82,6 @@ $mailer = LLMS()->mailer();
 
 					<!-- START CENTERED WHITE CONTAINER -->
 					<div class="content" style="box-sizing:border-box;color:<?php $mailer->get_css( 'font-color' ); ?>;display:block;Margin:0 auto;max-width:<?php $mailer->get_css( 'max-width' ); ?>;padding:10px;">
-
-						<!-- <span class="preheader" style="color:transparent;display:none;height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;visibility:hidden;width:0;">This is preheader text. Some clients will show this text as a preview.</span> -->
 
 						<?php if ( ! empty( $email_heading ) ) : ?>
 						<!-- START HEADING AREA -->

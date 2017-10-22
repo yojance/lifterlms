@@ -1,13 +1,20 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
-* Query LifterLMS Students for a given course / membership
-* @since    ??
-* @version  ??
+ * Query LifterLMS Students for a given course / membership
+ * @since    3.8.0
+ * @version  3.14.0
  * @package  LifterLMS\Queries
  * @author   LifterLMS
-*/
+ * @example
+ * 	$query = new LLMS_Notifications_Query( array(
+ * 		'subscriber' => 123, // null
+ * 		'per_page' => 10,
+ * 		'statuses' => 'new', // array( 'new', 'read', '...' )
+ * 		'types' => 'basic', // array( 'basic', 'email', '...' )
+ *  	) );
+ */
 class LLMS_Notifications_Query extends LLMS_Database_Query {
 
 	/**
@@ -19,18 +26,18 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	/**
 	 * Get an array of allowed notification statuses
 	 * @return   array
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	private function get_available_statuses() {
-		return array( 'new', 'sent', 'read', 'unread', 'deleted' );
+		return array( 'new', 'sent', 'read', 'unread', 'deleted', 'failed' );
 	}
 
 	/**
 	 * Get the available notification types
 	 * @return   array
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	private function get_available_types() {
 		return array( 'basic', 'email' );
@@ -39,19 +46,22 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	/**
 	 * Retrieve default arguments for a student query
 	 * @return   array
-	 * @since    3.4.0
-	 * @version  ??
+	 * @since    3.8.0
+	 * @version  3.11.0
 	 */
 	protected function get_default_args() {
 
 		$args = array(
-			'subsciber' => null,
+			'post_id' => null,
+			'subscriber' => null,
 			'sort' => array(
 				'updated' => 'DESC',
 				'id' => 'DESC',
 			),
 			'statuses' => array(),
+			'triggers' => array(),
 			'types' => array(),
+			'user_id' => null,
 		);
 
 		$args = wp_parse_args( $args, parent::get_default_args() );
@@ -60,6 +70,12 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 
 	}
 
+	/**
+	 * Convert raw results to notification objects
+	 * @return   array
+	 * @since    3.8.0
+	 * @version  3.8.0
+	 */
 	public function get_notifications() {
 
 		$notifications = array();
@@ -71,7 +87,6 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 				$obj = new LLMS_Notification( $result->id );
 				$notifications[] = $obj->load();
 			}
-
 		}
 
 		if ( $this->get( 'suppress_filters' ) ) {
@@ -85,8 +100,8 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	/**
 	 * Parse arguments needed for the query
 	 * @return   void
-	 * @since    ??
-	 * @version  ??
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	protected function parse_args() {
 
@@ -98,8 +113,8 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	/**
 	 * Parse submitted statuses
 	 * @return   void
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	private function parse_statuses() {
 
@@ -120,8 +135,8 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	/**
 	 * Parse submitted types
 	 * @return   void
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	private function parse_types() {
 
@@ -139,10 +154,29 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 	}
 
 	/**
+	 * Parse submitted triggers
+	 * @return   void
+	 * @since    3.11.0
+	 * @version  3.11.0
+	 */
+	private function parse_triggers() {
+
+		$triggers = $this->arguments['triggers'];
+
+		// allow strings to be submitted when only requesting one status
+		if ( is_string( $triggers ) ) {
+			$triggers = array( $triggers );
+		}
+
+		$this->arguments['triggers'] = $triggers;
+
+	}
+
+	/**
 	 * Prepare the SQL for the query
 	 * @return   void
-	 * @since    3.4.0
-	 * @version  3.4.0
+	 * @since    3.8.0
+	 * @version  3.9.4
 	 */
 	protected function preprare_query() {
 
@@ -156,7 +190,9 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 		$sql = $wpdb->prepare(
 			"SELECT SQL_CALC_FOUND_ROWS *
 
-			FROM {$wpdb->prefix}lifterlms_notifications
+			FROM {$wpdb->prefix}lifterlms_notifications AS n
+
+			LEFT JOIN {$wpdb->posts} AS p on p.ID = n.post_id
 
 			{$this->sql_where()}
 
@@ -171,27 +207,78 @@ class LLMS_Notifications_Query extends LLMS_Database_Query {
 
 	}
 
+	/**
+	 * Retrieve the prepared SQL for the ORDER clase
+	 * Slightly modified from abstract to include the table name to prevent ambiguous errors
+	 * @return   string
+	 * @since    3.9.2
+	 * @version  3.9.2
+	 */
+	protected function sql_orderby() {
+
+		$sql = 'ORDER BY';
+
+		$comma = false;
+
+		foreach ( $this->get( 'sort' ) as $orderby => $order ) {
+			$pre = ( $comma ) ? ', ' : ' ';
+			$sql .= $pre . "n.{$orderby} {$order}";
+			$comma = true;
+		}
+
+		if ( $this->get( 'suppress_filters' ) ) {
+			return $sql;
+		}
+
+		return apply_filters( $this->get_filter( 'orderby' ), $sql, $this );
+
+	}
+
+	/**
+	 * Retrieve the prepared SQL for the WHERE clause
+	 * @return   string
+	 * @since    3.8.0
+	 * @version  3.14.0
+	 */
 	private function sql_where() {
 
 		global $wpdb;
 
 		$where = 'WHERE 1';
 
-		$statuses = $this->get( 'statuses' );
-		if ( $statuses ) {
-			$statuses = array_map( array( $this, 'escape_and_quote_string' ), $statuses );
-			$where .= sprintf( ' AND status IN( %s )', implode( ', ', $statuses ) );
+		$post_statuses = array_merge( array( 'publish' ), array_keys( llms_get_order_statuses() ) );
+		$post_statuses = array_map( array( $this, 'escape_and_quote_string' ), $post_statuses );
+		$where .= sprintf( ' AND p.post_status IN ( %s )', implode( ', ', $post_statuses ) );
+
+		// these args are all "whered" in the same way
+		$wheres = array(
+			'statuses' => 'status',
+			'triggers' => 'trigger_id',
+			'types' => 'type',
+		);
+
+		// loop through them and build the where clauses based off the submitted data
+		foreach ( $wheres as $arg_name => $col_name ) {
+
+			$arg = $this->get( $arg_name );
+			if ( $arg ) {
+				$prepped = array_map( array( $this, 'escape_and_quote_string' ), $arg );
+				$where .= sprintf( ' AND n.%1$s IN( %2$s )', $col_name, implode( ', ', $prepped ) );
+			}
 		}
 
-		$types = $this->get( 'types' );
-		if ( $types ) {
-			$types = array_map( array( $this, 'escape_and_quote_string' ), $types );
-			$where .= sprintf( ' AND type IN( %s )', implode( ', ', $types ) );
-		}
-
+		// add subscriber info if set
 		$subsciber = $this->get( 'subscriber' );
 		if ( $subsciber ) {
-			$where .= $wpdb->prepare( ' AND subscriber = %s', $subsciber );
+			$where .= $wpdb->prepare( ' AND n.subscriber = %s', $subsciber );
+		}
+
+		// add post and user id checks
+		foreach ( array( 'post_id', 'user_id' ) as $var ) {
+			$arg = $this->get( $var );
+			if ( $arg ) {
+				$where .= sprintf( ' AND n.%1$s = %2$d', esc_sql( $var ), absint( $arg ) );
+			}
 		}
 
 		return $where;

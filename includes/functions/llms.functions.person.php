@@ -53,16 +53,75 @@ function llms_create_new_person( $email, $email2, $username = '', $firstname = '
 }
 
 /**
+ * Checks LifterLMS user capabilities against an object
+ * @param    string     $cap     capability name
+ * @param    int        $obj_id  WP_Post or WP_User ID
+ * @return   boolean
+ * @since    3.13.0
+ * @version  3.13.0
+ */
+function llms_current_user_can( $cap, $obj_id = null ) {
+
+	$caps = LLMS_Roles::get_all_core_caps();
+	$grant = false;
+
+	if ( in_array( $cap, $caps ) ) {
+
+		// if the user has the cap, maybe do some additional checks
+		if ( current_user_can( $cap ) ) {
+
+			switch ( $cap ) {
+
+				case 'view_lifterlms_reports':
+
+					// can view others reports so its okay
+					if ( current_user_can( 'view_others_lifterlms_reports' ) ) {
+						$grant = true;
+
+						// can only view their own reports check if the student is their instructor
+					} elseif ( $obj_id ) {
+
+						$instructor = llms_get_instructor();
+						$student = llms_get_student( $obj_id );
+						if ( $instructor && $student ) {
+							foreach ( $instructor->get_posts( array(
+								'posts_per_page' => -1,
+							), 'ids' ) as $id ) {
+								if ( $student->get_enrollment_status( $id ) ) {
+									$grant = true;
+									break;
+								}
+							}
+						}
+					}
+
+				break;
+
+				// no other checks needed
+				default:
+					$grant = true;
+
+			}
+		}
+	}// End if().
+
+	return apply_filters( 'llms_current_user_can_' . $cap, $grant, $obj_id );
+
+}
+
+/**
  * Determine whether or not a user can bypass enrollment, drip, and prerequisite restrictions
- * @param    obj|int  $user     LLMS_Student, WP_User, or WP User ID
+ * @param    obj|int  $user     LLMS_Student, WP_User, or WP User ID, if none supplied get_current_user() will be uesd
  * @return   boolean
  * @since    3.7.0
- * @version  3.7.1
+ * @version  3.9.0
  */
-function llms_can_user_bypass_restrictions( $user ) {
+function llms_can_user_bypass_restrictions( $user = null ) {
 
-	if ( ! is_a( $user, 'LLMS_Student' ) ) {
-		$user = new LLMS_Student( $user );
+	$user = llms_get_student( $user );
+
+	if ( ! $user ) {
+		return false;
 	}
 
 	$roles = get_option( 'llms_grant_site_access', '' );
@@ -70,7 +129,7 @@ function llms_can_user_bypass_restrictions( $user ) {
 		$roles = array();
 	}
 
-	if ( array_intersect( $user->get( 'user' )->roles, $roles ) ) {
+	if ( array_intersect( $user->get_user()->roles, $roles ) ) {
 		return true;
 	}
 
@@ -112,6 +171,18 @@ function llms_enroll_student( $user_id, $product_id, $trigger = 'unspecified' ) 
 }
 
 /**
+ * Get an LLMS_Instructor
+ * @param    mixed     $user  WP_User ID, instance of WP_User, or instance of any instructor class extending this class
+ * @return   obj|false        LLMS_Instructor instance on success, false if user not found
+ * @since    3.13.0
+ * @version  3.13.0
+ */
+function llms_get_instructor( $user = null ) {
+	$student = new LLMS_Instructor( $user );
+	return $student->exists() ? $student : false;
+}
+
+/**
  * Retrieve the minimum accepted password strength for student passwords
  * @return string
  * @since  3.0.0
@@ -149,6 +220,18 @@ function llms_get_minimum_password_strength_name() {
 	}
 
 	return $r;
+}
+
+/**
+ * Get an LLMS_Student
+ * @param    mixed     $user  WP_User ID, instance of WP_User, or instance of any student class extending this class
+ * @return   obj|false        LLMS_Student instance on success, false if user not found
+ * @since    3.8.0
+ * @version  3.9.0
+ */
+function llms_get_student( $user = null ) {
+	$student = new LLMS_Student( $user );
+	return $student->exists() ? $student : false;
 }
 
 /**
@@ -250,6 +333,44 @@ function llms_set_person_auth_cookie( $user_id, $remember = false ) {
 	wp_set_current_user( $user_id );
 	wp_set_auth_cookie( $user_id, false );
 	update_user_meta( $user_id, 'llms_last_login', current_time( 'mysql' ) );
+}
+
+/**
+ * Generate a user password reset key, hash it, and store it in the database
+ * @param    int     $user_id  WP_User ID
+ * @return   string
+ * @since    3.8.0
+ * @version  3.8.0
+ */
+function llms_set_user_password_rest_key( $user_id ) {
+
+	$user = get_user_by( 'ID', $user_id );
+
+	// generate an activation key
+	$key = wp_generate_password( 20, false );
+
+	do_action( 'retrieve_password_key', $user->user_login, $key ); // wp core hook
+
+	// insert the hashed key into the db
+	if ( empty( $wp_hasher ) ) {
+		require_once ABSPATH . 'wp-includes/class-phpass.php';
+		$wp_hasher = new PasswordHash( 8, true );
+	}
+	$hashed = $wp_hasher->HashPassword( $key );
+
+	global $wpdb;
+	$wpdb->update(
+		$wpdb->users,
+		array(
+			'user_activation_key' => $hashed,
+		),
+		array(
+			'user_login' => $user->user_login,
+		)
+	);
+
+	return $key;
+
 }
 
 /**
@@ -381,9 +502,7 @@ function llms_add_user_table_rows( $val, $column_name, $user_id ) {
 							$return .= '<br><em>End Date</em>: ' . date( get_option( 'date_format' , 'Y-m-d' ), $end_date );
 						}
 					}
-
 				}
-
 			} else {
 
 				return 'No memberships';
@@ -394,7 +513,7 @@ function llms_add_user_table_rows( $val, $column_name, $user_id ) {
 
 		default:
 			$return = $val;
-	}
+	}// End switch().
 
 	return $return;
 

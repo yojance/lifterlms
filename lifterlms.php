@@ -3,15 +3,15 @@
  * Plugin Name: LifterLMS
  * Plugin URI: https://lifterlms.com/
  * Description: LifterLMS, the #1 WordPress LMS solution, makes it easy to create, sell, and protect engaging online courses.
- * Version: 3.7.3
+ * Version: 3.14.6
  * Author: Thomas Patrick Levy, codeBOX LLC
  * Author URI: https://lifterlms.com/
  * Text Domain: lifterlms
  * Domain Path: /languages
- * License: GPLv2
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires at least: 4.0
- * Tested up to: 4.7.4
+ * Tested up to: 4.8.2
  *
  * @package     LifterLMS
  * @category 	Core
@@ -35,7 +35,7 @@ require_once 'vendor/autoload.php';
  */
 final class LifterLMS {
 
-	public $version = '3.7.3';
+	public $version = '3.14.6';
 
 	protected static $_instance = null;
 
@@ -139,7 +139,7 @@ final class LifterLMS {
 		} elseif ( 0 === strpos( $class, 'llms_interface' ) ) {
 			$path = $this->plugin_path() . '/includes/interfaces/';
 			$file = $fileize . '.php';
-		} elseif (strpos( $class, 'llms_' ) === 0 ) {
+		} elseif ( strpos( $class, 'llms_' ) === 0 ) {
 			$path = $this->plugin_path() . '/includes/';
 		}
 
@@ -184,7 +184,7 @@ final class LifterLMS {
 	/**
 	 * Include required core classes
 	 * @since   1.0.0
-	 * @version [version]
+	 * @version 3.13.0
 	 */
 	private function includes() {
 
@@ -224,7 +224,7 @@ final class LifterLMS {
 
 		}
 
-		include 'includes/class.llms.notifications.php';
+		include 'includes/notifications/class.llms.notifications.php';
 
 		// Date, Number and language formatting
 		include_once( 'includes/class.llms.date.php' );
@@ -253,7 +253,7 @@ final class LifterLMS {
 		// Hooks
 		include_once( 'includes/llms.template.hooks.php' );
 
-		// Custom Post Type Models
+		// Models
 		require_once 'includes/abstracts/abstract.llms.post.model.php';
 		foreach ( glob( LLMS_PLUGIN_DIR . 'includes/models/*.php', GLOB_NOSORT ) as $model ) {
 			require_once $model;
@@ -265,12 +265,12 @@ final class LifterLMS {
 		include_once( 'includes/notifications/class.llms.notifications.query.php' );
 
 		// Classes
-		include_once( 'includes/class.llms.student.php' );
 		include_once( 'includes/class.llms.lesson.handler.php' );
 		include_once( 'includes/class.llms.quiz.php' );
 		include_once( 'includes/class.llms.course.factory.php' );
 		include_once( 'includes/class.llms.review.php' );
 		include_once( 'includes/class.llms.student.dashboard.php' );
+		include_once( 'includes/class.llms.user.permissions.php' );
 		include_once( 'includes/class.llms.view.manager.php' );
 
 		//handler classes
@@ -285,6 +285,7 @@ final class LifterLMS {
 		// controllers
 		include_once( 'includes/controllers/class.llms.controller.orders.php' );
 		include_once( 'includes/controllers/class.llms.controller.account.php' );
+		include_once( 'includes/controllers/class.llms.controller.quizzes.php' );
 		include_once( 'includes/controllers/class.llms.controller.registration.php' );
 
 		// comments
@@ -430,13 +431,13 @@ final class LifterLMS {
 	 *
 	 * @param array $links [array of links]
 	 */
-	public function add_action_links ( $links ) {
+	public function add_action_links( $links ) {
 
 		$lifter_links = array(
 			'<a href="' . admin_url( 'admin.php?page=llms-settings' ) . '">' . __( 'Settings', 'lifterlms' ) . '</a>'
 		);
 
-		if (count( $links ) == 3) {
+		if ( count( $links ) == 3 ) {
 			return $links;
 		}
 

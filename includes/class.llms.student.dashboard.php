@@ -2,7 +2,7 @@
 /**
  * Retrieve data sets used by various other classes and functions
  * @since    3.0.0
- * @version  [version]
+ * @version  3.14.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -100,12 +100,10 @@ class LLMS_Student_Dashboard {
 		$tabs = self::get_tabs();
 
 		foreach ( $tabs as $var => $data ) {
-
 			if ( isset( $wp->query_vars[ $var ] ) ) {
 				$current_tab = $var;
 				break;
 			}
-
 		}
 
 		if ( 'data' === $return ) {
@@ -120,21 +118,31 @@ class LLMS_Student_Dashboard {
 	 * Retrieve all dashboard tabs and related data
 	 * @return   array
 	 * @since    3.0.0
-	 * @version  3.2.3
+	 * @version  3.14.0
 	 */
 	public static function get_tabs() {
 
 		return apply_filters( 'llms_get_student_dashboard_tabs', array(
 			'dashboard' => array(
-				'content' => array( __CLASS__, 'output_dashboard_content' ),
+				'content' => 'lifterlms_template_student_dashboard_home',
 				'endpoint' => false,
 				'title' => __( 'Dashboard', 'lifterlms' ),
 				'url' => llms_get_page_url( 'myaccount' ),
 			),
 			'view-courses' => array(
-				'content' => array( __CLASS__, 'output_courses_content' ),
+				'content' => 'lifterlms_template_student_dashboard_my_courses',
 				'endpoint' => get_option( 'lifterlms_myaccount_courses_endpoint', 'my-courses' ),
 				'title' => __( 'My Courses', 'lifterlms' ),
+			),
+			'view-achievements' => array(
+				'content' => 'lifterlms_template_student_dashboard_my_achievements',
+				'endpoint' => get_option( 'lifterlms_myaccount_achievements_endpoint', 'my-achievements' ),
+				'title' => __( 'My Achievements', 'lifterlms' ),
+			),
+			'notifications' => array(
+				'content' => array( __CLASS__, 'output_notifications_content' ),
+				'endpoint' => get_option( 'lifterlms_myaccount_notifications_endpoint', 'notifications' ),
+				'title' => __( 'Notifications', 'lifterlms' ),
 			),
 			'edit-account' => array(
 				'content' => array( __CLASS__, 'output_edit_account_content' ),
@@ -162,39 +170,29 @@ class LLMS_Student_Dashboard {
 
 	/**
 	 * Callback to output View Courses endpoint content
-	 * @return   void
-	 * @since    3.0.0
-	 * @version  3.6.0
+	 * @return      void
+	 * @since       3.0.0
+	 * @version     3.14.0
+	 * @deprecated  3.14.0
 	 */
 	public static function output_courses_content() {
 
-		$limit = isset( $_GET['limit'] ) ? $_GET['limit'] : apply_filters( 'llms_dashboard_courses_per_page', 10 );
-		$skip = isset( $_GET['skip'] ) ? $_GET['skip'] : 0;
-		$courses = self::get_courses( $limit, $skip );
-
-		llms_get_template( 'myaccount/my-courses.php', array(
-			'student' => new LLMS_Student(),
-			'courses' => $courses,
-			'pagination' => $courses['more'],
-		) );
+		llms_deprecated_function( 'LLMS_Student_Dashboard::output_courses_content()', '3.14.0', 'lifterlms_template_student_dashboard_my_courses( false )' );
+		lifterlms_template_student_dashboard_my_courses( false );
 
 	}
 
 	/**
 	 * Callback to output main dashboard content
-	 * @return   void
-	 * @since    3.0.0
-	 * @version  3.6.0
+	 * @return      void
+	 * @since       3.0.0
+	 * @version     3.14.0
+	 * @deprecated  3.14.0
 	 */
 	public static function output_dashboard_content() {
 
-		$limit = apply_filters( 'llms_dashboard_recent_courses_count', 3 );
-
-		llms_get_template( 'myaccount/dashboard.php', array(
-			'current_user' 	=> get_user_by( 'id', get_current_user_id() ),
-			'student' => new LLMS_Student(),
-			'courses' => self::get_courses( $limit ),
-		) );
+		llms_deprecated_function( 'LLMS_Student_Dashboard::output_dashboard_content()', '3.14.0', 'lifterlms_template_student_dashboard_home()' );
+		lifterlms_template_student_dashboard_home();
 
 	}
 
@@ -211,10 +209,96 @@ class LLMS_Student_Dashboard {
 	}
 
 	/**
+	 * Callback to oupput the notifications content
+	 * @return   void
+	 * @since    3.8.0
+	 * @version  3.9.0
+	 */
+	public static function output_notifications_content() {
+
+		$url = llms_get_endpoint_url( 'notifications', '', llms_get_page_url( 'myaccount' ) );
+
+		$sections = array(
+			array(
+				'url' => $url,
+				'name' => __( 'View Notifications', 'lifterlms' ),
+			),
+			array(
+				'url' => add_query_arg( 'sdview', 'prefs', $url ),
+				'name' => __( 'Manage Preferences', 'lifterlms' ),
+			),
+		);
+
+		$view = isset( $_GET['sdview'] ) ? $_GET['sdview'] : 'view';
+
+		if ( 'view' === $view ) {
+
+			$page = isset( $_GET['sdpage'] ) ? absint( $_GET['sdpage'] ) : 1;
+
+			$notifications = new LLMS_Notifications_Query( array(
+				'page' => $page,
+				'per_page' => 25,
+				'subscriber' => get_current_user_id(),
+				'sort' => array(
+					'created' => 'DESC',
+					'id' => 'DESC',
+				),
+				'types' => 'basic',
+			) );
+
+			$pagination = array(
+				'next' => $notifications->is_last_page() || ! $notifications->found_results ? '' : add_query_arg( 'sdpage', $page + 1, $url ),
+				'prev' => $notifications->is_first_page() ? '' : add_query_arg( 'sdpage', $page - 1, $url ),
+			);
+
+			$args = array(
+				'notifications' => $notifications->get_notifications(),
+				'pagination' => $pagination,
+				'sections' => $sections,
+			);
+
+		} else {
+
+			$types = apply_filters( 'llms_notification_subscriber_manageable_types', array( 'email' ) );
+
+			$settings = array();
+			$student = new LLMS_Student( get_current_user_id() );
+
+			foreach ( LLMS()->notifications()->get_controllers() as $controller ) {
+
+				foreach ( $types as $type ) {
+
+					$configs = $controller->get_subscribers_settings( $type );
+					if ( in_array( 'student', array_keys( $configs ) ) && 'yes' === $configs['student'] ) {
+
+						if ( ! isset( $settings[ $type ] ) ) {
+							$settings[ $type ] = array();
+						}
+
+						$settings[ $type ][ $controller->id ] = array(
+							'name' => $controller->get_title(),
+							'value' => $student->get_notification_subscription( $type, $controller->id, 'yes' ),
+						);
+					}
+				}
+			}
+
+			$args = array(
+				'sections' => $sections,
+				'settings' => $settings,
+			);
+
+		}// End if().
+
+		llms_get_template( 'myaccount/my-notifications.php', $args );
+
+	}
+
+	/**
 	 * Endpoint to output orders content
 	 * @return   void
 	 * @since    3.0.0
-	 * @version  [version]
+	 * @version  3.8.0
 	 */
 	public static function output_orders_content() {
 
@@ -236,7 +320,6 @@ class LLMS_Student_Dashboard {
 					'paged' => isset( $_GET['txnpage'] ) ? absint( $_GET['txnpage'] ) : 1,
 				) );
 			}
-
 
 			llms_get_template( 'myaccount/view-order.php', array(
 				'order' => $order,

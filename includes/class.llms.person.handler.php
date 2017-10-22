@@ -3,7 +3,7 @@
  * User Handling for login and registration (mostly)
  *
  * @since    3.0.0
- * @version  3.7.0
+ * @version  3.8.0
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 class LLMS_Person_Handler {
@@ -116,7 +116,6 @@ class LLMS_Person_Handler {
 			if ( 'account' !== $screen ) {
 				$fields = self::get_password_fields( $screen, $fields );
 			}
-
 		}
 
 		$names = get_option( 'lifterlms_user_info_field_names_' . $screen . '_visibility' );
@@ -193,7 +192,7 @@ class LLMS_Person_Handler {
 				'required' => ( 'required' === $address ) ? true : false,
 				'type'  => 'select',
 			);
-		}
+		}// End if().
 
 		$phone = get_option( 'lifterlms_user_info_field_phone_' . $screen . '_visibility' );
 		if ( 'hidden' !== $phone ) {
@@ -392,8 +391,8 @@ class LLMS_Person_Handler {
 	 * Retrieve fields for password recovery
 	 * This is for the form that sends a password reset email
 	 * @return   array
-	 * @since    [version]
-	 * @version  [version]
+	 * @since    3.8.0
+	 * @version  3.8.0
 	 */
 	public static function get_lost_password_fields() {
 
@@ -468,12 +467,12 @@ class LLMS_Person_Handler {
 	 * @param    array $data   array of data (from a $_POST or function)
 	 * @return   array
 	 * @since    3.0.0
-	 * @version  3.7.0
+	 * @version  3.8.0
 	 */
 	private static function fill_fields( $fields, $data ) {
 
 		if ( is_numeric( $data ) ) {
-			$user = new WP_User( $data );
+			$user = new LLMS_Student( $data );
 		}
 
 		foreach ( $fields as &$field ) {
@@ -483,13 +482,29 @@ class LLMS_Person_Handler {
 			}
 
 			$name = isset( $field['name'] ) ? $field['name'] : $field['id'];
+			$val = false;
+
 			if ( isset( $data[ $name ] ) ) {
-				$field['value'] = $data[ $name ];
+
+				$val = $data[ $name ];
+
 			} elseif ( isset( $user ) ) {
+
 				if ( 'email_address' === $name ) {
 					$name = 'user_email';
 				}
-				$field['value'] = $user->{$name};
+				$val = $user->get( $name );
+
+			}
+
+			if ( $val ) {
+				if ( 'checkbox' === $field['type'] ) {
+					if ( $val == $field['value'] ) {
+						$field['selected'] = true;
+					}
+				} else {
+					$field['value'] = $val;
+				}
 			}
 		}
 
@@ -553,7 +568,7 @@ class LLMS_Person_Handler {
 
 			return new WP_Error( 'invalid', __( 'Invalid action' ) );
 
-		}
+		}// End if().
 
 		foreach ( $extra_data as $field ) {
 			if ( isset( $data[ $field ] ) ) {
@@ -573,7 +588,7 @@ class LLMS_Person_Handler {
 		$data[ self::$meta_prefix . 'ip_address' ] = llms_get_ip_address();
 
 		// metas
-		$possible_metas = array(
+		$possible_metas = apply_filters( 'llms_person_insert_data_possible_metas', array(
 			self::$meta_prefix . 'billing_address_1',
 			self::$meta_prefix . 'billing_address_2',
 			self::$meta_prefix . 'billing_city',
@@ -582,7 +597,7 @@ class LLMS_Person_Handler {
 			self::$meta_prefix . 'billing_country',
 			self::$meta_prefix . 'ip_address',
 			self::$meta_prefix . 'phone',
-		);
+		) );
 		$insert_metas = array();
 		foreach ( $possible_metas as $meta ) {
 			if ( isset( $data[ $meta ] ) ) {
@@ -626,7 +641,7 @@ class LLMS_Person_Handler {
 
 			return apply_filters( 'lifterlms_user_login_errors', $valid, $data );
 
-		} // log the user in
+		} // End if().
 		else {
 
 			$creds = array();
@@ -646,7 +661,6 @@ class LLMS_Person_Handler {
 					return $e;
 
 				}
-
 			} else {
 
 				$creds['user_login'] = $data['llms_login'];
@@ -664,12 +678,9 @@ class LLMS_Person_Handler {
 			} else {
 				return $signon->ID;
 			}
-
 		}
 
 	}
-
-
 
 	/**
 	 * Perform validations according to the registration screen and registers a user
@@ -716,7 +727,7 @@ class LLMS_Person_Handler {
 
 			return apply_filters( 'lifterlms_user_registration_errors', $valid, $data, $screen );
 
-		} // register the user
+		} // End if().
 		else {
 
 			do_action( 'lifterlms_user_registration_after_validation', $data, $screen );
@@ -799,7 +810,7 @@ class LLMS_Person_Handler {
 
 			return apply_filters( 'lifterlms_user_update_errors', $valid, $data, $screen );
 
-		} // update the user
+		} // End if().
 		else {
 
 			do_action( 'lifterlms_user_update_after_validation', $data, $screen );
@@ -843,7 +854,7 @@ class LLMS_Person_Handler {
 	 * @param    string $screen screen to validate fields against, accepts "checkout", "registration", or "update"
 	 * @return   true|WP_Error
 	 * @since    3.0.0
-	 * @version  [version]
+	 * @version  3.8.0
 	 */
 	public static function validate_fields( $data, $screen = 'registration' ) {
 
@@ -869,7 +880,6 @@ class LLMS_Person_Handler {
 					}
 				}
 			}
-
 		}
 
 		$e = new WP_Error();
@@ -909,7 +919,7 @@ class LLMS_Person_Handler {
 				if ( ! $skip_email && email_exists( $val ) ) {
 					$e->add( $field['id'], sprintf( __( 'An account with the email address "%s" already exists.', 'lifterlms' ), $val ), 'email-exists' );
 				}
-			} // validate the username
+			} // End if().
 			elseif ( 'user_login' === $name ) {
 
 				// blacklist usernames for security purposes
@@ -924,7 +934,6 @@ class LLMS_Person_Handler {
 					$e->add( $field['id'], sprintf( __( 'An account with the username "%s" already exists.', 'lifterlms' ), $val ), 'username-exists' );
 
 				}
-
 			} elseif ( 'llms_voucher' === $name && ! empty( $val ) ) {
 
 				$v = new LLMS_Voucher();
@@ -932,7 +941,6 @@ class LLMS_Person_Handler {
 				if ( is_wp_error( $check ) ) {
 					$e->add( $field['id'], $check->get_error_message(), 'voucher-' . $check->get_error_code() );
 				}
-
 			} elseif ( 'current_password' === $name ) {
 				$user = wp_get_current_user();
 				if ( ! wp_check_password( $val, $user->data->user_pass, $user->ID ) ) {
@@ -944,10 +952,6 @@ class LLMS_Person_Handler {
 			if ( isset( $field['type'] ) ) {
 
 				switch ( $field['type'] ) {
-
-					// add the opposite value if not set
-					case 'checkbox':
-					break;
 
 					// ensure it's a selectable option
 					case 'select':
@@ -978,8 +982,7 @@ class LLMS_Person_Handler {
 					break;
 
 				}
-
-			}
+			}// End if().
 
 			// store this fields label so it can be used in a match error later if necessary
 			if ( ! empty( $field['matched'] ) ) {
@@ -998,15 +1001,12 @@ class LLMS_Person_Handler {
 					$e->add( $field['id'], sprintf( __( '%1$s must match %2$s', 'lifterlms' ), $matched_values[ $field['id'] ], $label ), 'match' );
 
 				}
-
 			}
-
-		}
+		}// End foreach().
 
 		// return errors if we have errors
 		if ( $e->get_error_messages() ) {
 			return $e;
-
 		}
 
 		return true;
