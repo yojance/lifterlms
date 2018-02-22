@@ -61,9 +61,12 @@ class LLMS_Unit_Tests_Bootstrap {
 			$_SERVER['SERVER_NAME'] = 'localhost';
 		}
 
+
 		$this->tests_dir    = dirname( __FILE__ );
 		$this->plugin_dir   = dirname( $this->tests_dir );
 		$this->wp_tests_dir = getenv( 'WP_TESTS_DIR' ) ? getenv( 'WP_TESTS_DIR' ) : '/tmp/wordpress-tests-lib';
+
+		$GLOBALS['BROWSERSTACK_CONFIG'] = json_decode( file_get_contents( $this->plugin_dir . '/.browserstack' ), true );
 
 		// load test function so tests_add_filter() is available
 		require_once $this->wp_tests_dir . '/includes/functions.php';
@@ -81,6 +84,7 @@ class LLMS_Unit_Tests_Bootstrap {
 
 		// load LLMS testing framework
 		$this->includes();
+
 	}
 
 	/**
@@ -135,9 +139,12 @@ class LLMS_Unit_Tests_Bootstrap {
 	 */
 	public function includes() {
 
+		require 'vendor/autoload.php';
+
 		require 'tests/framework/class.llms.unit.test.case.php';
 		require 'tests/framework/class.llms.notification.test.case.php';
 		require 'tests/framework/class.llms.post.model.unit.test.case.php';
+		require 'tests/framework/class.llms.browserstack.test.case.php';
 
 	}
 

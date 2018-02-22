@@ -11,6 +11,7 @@
 	<testsuites>
 		<testsuite name="LifterLMS Test Suite">
 			<directory suffix=".php">tests/unit-tests</directory>
+			<directory suffix=".php">tests/selenium-tests</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
