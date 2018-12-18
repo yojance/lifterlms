@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Voucher Class
  * @since    2.0.0
- * @version  [version]
+ * @version  3.24.1
  */
 class LLMS_Voucher {
 
@@ -277,7 +277,7 @@ class LLMS_Voucher {
 	 * @param  int     $user_id  user id of the redeeming user
 	 * @return bool|WP_Error     true on success or WP_Error on failure
 	 * @since    2.0.0
-	 * @version  3.0.0
+	 * @version  3.24.1
 	 */
 	public function use_voucher( $code, $user_id ) {
 
@@ -308,7 +308,7 @@ class LLMS_Voucher {
 
 				}
 
-				do_action( 'llms_voucher_used', $voucher->id, $user_id );
+				do_action( 'llms_voucher_used', $voucher->id, $user_id, $voucher->title );
 
 				// use voucher code
 				$data = array(
@@ -394,7 +394,7 @@ class LLMS_Voucher {
 	 * @param  string   $post_type  allows filtering of products by post type
 	 * @return array
 	 * @since   2.0.0
-	 * @version [version]
+	 * @version 3.24.0
 	 */
 	public function get_products( $post_type = 'any' ) {
 

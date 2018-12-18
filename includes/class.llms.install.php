@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Plugin installation
  * @since   1.0.0
- * @version 3.22.0
+ * @version 3.24.0
  */
 class LLMS_Install {
 
@@ -213,7 +213,7 @@ class LLMS_Install {
 	 * Create essential starter pages
 	 * @return   boolean    false on error, true on success
 	 * @since    1.0.0
-	 * @version  3.0.0
+	 * @version  3.24.0
 	 */
 	public static function create_pages() {
 		$pages = apply_filters( 'llms_install_create_pages', array(
@@ -238,8 +238,8 @@ class LLMS_Install {
 			array(
 				'content' => '[lifterlms_my_account]',
 				'option' => 'lifterlms_myaccount_page_id',
-				'slug' => 'my-courses',
-				'title' => __( 'My Courses', 'lifterlms' ),
+				'slug' => 'dashboard',
+				'title' => __( 'Dashboard', 'lifterlms' ),
 			),
 		) );
 		foreach ( $pages as $page ) {
