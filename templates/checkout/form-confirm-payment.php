@@ -3,8 +3,9 @@
  * Checkout Form
  *
  * @package  LifterLMS/Templates
- * @since    1.0.0
- * @version  3.24.1
+ *
+ * @since 1.0.0
+ * @version 3.30.2
  */
 
 $order_key = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
@@ -37,7 +38,7 @@ defined( 'ABSPATH' ) || exit;
 				<div class="llms-checkout-section-content">
 					<?php do_action( 'lifterlms_checkout_confirm_before_billing_info' ); ?>
 					<?php foreach ( LLMS_Person_Handler::get_available_fields( 'checkout', $field_data ) as $field ) : ?>
-						<span class="llms-field-display <?php echo $field['id']; ?>"><?php echo $field['value']; ?></span><?php echo $field['last_column'] ? '<br>' : ' '; ?>
+						<span class="llms-field-display <?php echo $field['id']; ?>"><?php echo ! empty( $field['value'] ) ? $field['value']: ''; ?></span><?php echo $field['last_column'] ? '<br>' : ' '; ?>
 					<?php endforeach; ?>
 					<?php do_action( 'lifterlms_checkout_confirm_after_billing_info' ); ?>
 				</div>

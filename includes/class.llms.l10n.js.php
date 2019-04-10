@@ -7,7 +7,7 @@
  *
  * @package  LifterLMS/Classes/Localization
  * @since    3.17.8
- * @version  3.25.4
+ * @version  3.30.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -33,7 +33,7 @@ class LLMS_L10n_JS {
 	 * @param    array $strings existing strings from core / 3rd parties.
 	 * @return   array
 	 * @since    3.17.8
-	 * @version  3.25.4
+	 * @version  3.30.0
 	 */
 	public function get_strings( $strings ) {
 		// phpcs:disable
@@ -89,7 +89,7 @@ class LLMS_L10n_JS {
 			 * File: assets/js/builder/Models/Lesson.js.
 			 *
 			 * @since    3.13.0
-			 * @version  3.24.0
+			 * @version  3.27.0
 			 */
 			'New Lesson' => esc_html__( 'New Lesson', 'lifterlms' ),
 			'lessons' => esc_html__( 'lessons', 'lifterlms' ),
@@ -97,6 +97,15 @@ class LLMS_L10n_JS {
 			'Section %1$d: %2$s' => esc_html__( 'Section %1$d: %2$s', 'lifterlms' ),
 			'Lesson %1$d: %2$s' => esc_html__( 'Lesson %1$d: %2$s', 'lifterlms' ),
 			'%1$s Quiz' => esc_html__( '%1$s Quiz', 'lifterlms' ),
+
+			/**
+			 * File: assets/js/builder/Models/Question.js.
+			 *
+			 * @since    3.16.0
+			 * @version  3.27.0
+			 */
+			'questions' => esc_html__( 'questions', 'lifterlms' ),
+			'question' => esc_html__( 'question', 'lifterlms' ),
 
 			/**
 			 * File: assets/js/builder/Models/Quiz.js.
@@ -225,9 +234,18 @@ class LLMS_L10n_JS {
 			 * File: assets/js/builder/Views/Question.js.
 			 *
 			 * @since    3.16.0
-			 * @version  3.16.0
+			 * @version  3.27.0
 			 */
 			'Are you sure you want to delete this question?' => esc_html__( 'Are you sure you want to delete this question?', 'lifterlms' ),
+
+			/**
+			 * File: assets/js/builder/Views/QuestionType.js.
+			 *
+			 * @since    3.16.0
+			 * @version  3.27.0
+			 */
+			'Add Existing Question' => esc_html__( 'Add Existing Question', 'lifterlms' ),
+			'Search for existing questions...' => esc_html__( 'Search for existing questions...', 'lifterlms' ),
 
 			/**
 			 * File: assets/js/builder/Views/Quiz.js.
@@ -269,6 +287,14 @@ class LLMS_L10n_JS {
 			'Select Image' => esc_html__( 'Select Image', 'lifterlms' ),
 
 			/**
+			 * File: assets/js/llms-admin-tables.js.
+			 *
+			 * @since    3.2.0
+			 * @version  3.28.1
+			 */
+			'An error was encountered generating the export' => esc_html__( 'An error was encountered generating the export', 'lifterlms' ),
+
+			/**
 			 * File: assets/js/llms-admin.js.
 			 *
 			 * @since    ??
@@ -295,6 +321,8 @@ class LLMS_L10n_JS {
 			 * @since    3.16.0
 			 * @version  3.16.0
 			 */
+			'questions' => esc_html__( 'questions', 'lifterlms' ),
+			'question' => esc_html__( 'question', 'lifterlms' ),
 			'General Settings' => esc_html__( 'General Settings', 'lifterlms' ),
 			'Description' => esc_html__( 'Description', 'lifterlms' ),
 			'Passing Percentage' => esc_html__( 'Passing Percentage', 'lifterlms' ),
@@ -348,6 +376,8 @@ class LLMS_L10n_JS {
 			'Attach' => esc_html__( 'Attach', 'lifterlms' ),
 			'Clone' => esc_html__( 'Clone', 'lifterlms' ),
 			'ID' => esc_html__( 'ID', 'lifterlms' ),
+			'Add Existing Question' => esc_html__( 'Add Existing Question', 'lifterlms' ),
+			'Search for existing questions...' => esc_html__( 'Search for existing questions...', 'lifterlms' ),
 			'Are you sure you want to delete this question?' => esc_html__( 'Are you sure you want to delete this question?', 'lifterlms' ),
 			'An error occurred while trying to load the questions. Please refresh the page and try again.' => esc_html__( 'An error occurred while trying to load the questions. Please refresh the page and try again.', 'lifterlms' ),
 			'Add Existing Quiz' => esc_html__( 'Add Existing Quiz', 'lifterlms' ),
@@ -366,9 +396,11 @@ class LLMS_L10n_JS {
 			 * File: assets/js/llms-metabox-product.js.
 			 *
 			 * @since    3.0.0
-			 * @version  3.23.0
+			 * @version  3.30.0
 			 */
 			'There was an error loading the necessary resources. Please try again.' => esc_html__( 'There was an error loading the necessary resources. Please try again.', 'lifterlms' ),
+			'After deleting this access plan, any students subscribed to this plan will still have access and will continue to make recurring payments according to the access plan\'s settings. If you wish to terminate their plans you must do so manually. This action cannot be reversed.' => esc_html__( 'After deleting this access plan, any students subscribed to this plan will still have access and will continue to make recurring payments according to the access plan\'s settings. If you wish to terminate their plans you must do so manually. This action cannot be reversed.', 'lifterlms' ),
+			'An error was encounterd during the save attempt. Please try again.' => esc_html__( 'An error was encounterd during the save attempt. Please try again.', 'lifterlms' ),
 
 			/**
 			 * File: assets/js/llms-metabox-students.js.
@@ -382,10 +414,13 @@ class LLMS_L10n_JS {
 			 * File: assets/js/llms-metaboxes.js.
 			 *
 			 * @since    3.0.0
-			 * @version  3.21.0
+			 * @version  3.30.0
 			 */
 			'Are you sure you want to delete this row? This cannot be undone.' => esc_html__( 'Are you sure you want to delete this row? This cannot be undone.', 'lifterlms' ),
 			'Click okay to enroll all active members into the selected course. Enrollment will take place in the background and you may leave your site after confirmation. This action cannot be undone!' => esc_html__( 'Click okay to enroll all active members into the selected course. Enrollment will take place in the background and you may leave your site after confirmation. This action cannot be undone!', 'lifterlms' ),
+			'"%s" is already in the course list.' => esc_html__( '"%s" is already in the course list.', 'lifterlms' ),
+			'Remove course' => esc_html__( 'Remove course', 'lifterlms' ),
+			'Enroll All Members' => esc_html__( 'Enroll All Members', 'lifterlms' ),
 			'Cancel' => esc_html__( 'Cancel', 'lifterlms' ),
 			'Refund' => esc_html__( 'Refund', 'lifterlms' ),
 			'Record a Manual Payment' => esc_html__( 'Record a Manual Payment', 'lifterlms' ),
@@ -449,9 +484,12 @@ class LLMS_L10n_JS {
 			 * File: assets/js/private/llms-metaboxes.js.
 			 *
 			 * @since    3.0.0
-			 * @version  3.21.0
+			 * @version  3.30.0
 			 */
 			'Click okay to enroll all active members into the selected course. Enrollment will take place in the background and you may leave your site after confirmation. This action cannot be undone!' => esc_html__( 'Click okay to enroll all active members into the selected course. Enrollment will take place in the background and you may leave your site after confirmation. This action cannot be undone!', 'lifterlms' ),
+			'"%s" is already in the course list.' => esc_html__( '"%s" is already in the course list.', 'lifterlms' ),
+			'Remove course' => esc_html__( 'Remove course', 'lifterlms' ),
+			'Enroll All Members' => esc_html__( 'Enroll All Members', 'lifterlms' ),
 			'Cancel' => esc_html__( 'Cancel', 'lifterlms' ),
 			'Refund' => esc_html__( 'Refund', 'lifterlms' ),
 			'Record a Manual Payment' => esc_html__( 'Record a Manual Payment', 'lifterlms' ),

@@ -4,12 +4,18 @@
  *
  * [lifterlms_courses]
  *
- * @since    3.14.0
- * @version  3.14.0
+ * @since 3.14.0
+ * @version 3.30.2
  */
 
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+defined( 'ABSPATH' ) || exit;
 
+/**
+ * LifterLMS Courses Shortcode class.
+ *
+ * @since 3.14.0
+ * @since 3.30.2 Output a message instead of the entire course catalog when "mine" is used and and current student is not enrolled in any courses.
+ */
 class LLMS_Shortcode_Courses extends LLMS_Shortcode {
 
 	/**
@@ -121,7 +127,7 @@ class LLMS_Shortcode_Courses extends LLMS_Shortcode {
 
 	/**
 	 * Retrieve a WP_Query based on all submitted parameters
-	 * @return   WP_Query
+	 * @return mixed WP_Query
 	 * @since    3.14.0
 	 * @version  3.14.0
 	 */
@@ -148,9 +154,10 @@ class LLMS_Shortcode_Courses extends LLMS_Shortcode {
 	 * $atts & $content are both filtered before being passed to get_output()
 	 * output is filtered so the return of get_output() doesn't need its own filter
 	 *
-	 * @return   string
-	 * @since    3.14.0
-	 * @version  3.14.0
+	 * @since 3.14.0
+	 * @since 3.30.2 Output a message instead of the entire course catalog when "mine" is used and and current student is not enrolled in any courses.
+	 *
+	 * @return string
 	 */
 	protected function get_output() {
 
@@ -160,13 +167,24 @@ class LLMS_Shortcode_Courses extends LLMS_Shortcode {
 
 		// if we're outputting a "My Courses" list and we don't have a student output login info
 		if ( 'no' !== $this->get_attribute( 'mine' ) && ! llms_get_student() ) {
+
 			printf(
 				__( 'You must be logged in to view this information. Click %1$shere%2$s to login.', 'lifterlms' ),
 				'<a href="' . llms_get_page_url( 'myaccount' ) . '">',
 				'</a>'
 			);
+
 		} else {
-			lifterlms_loop( $this->get_wp_query() );
+
+			if ( 'no' !== $this->get_attribute( 'mine' ) && ! $this->get_post__in() ) {
+
+				printf( '<p>%s</p>', __( 'No courses found.', 'lifterlms' ) );
+
+			} else {
+
+				lifterlms_loop( $this->get_wp_query() );
+
+			}
 		}
 
 		return ob_get_clean();

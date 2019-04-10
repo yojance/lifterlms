@@ -2,9 +2,9 @@
 /**
  * Quiz Attempt Model
  *
- * @package  LifterLMS/Models
+ * @package LifterLMS/Models
  * @since   3.9.0
- * @version 3.24.0
+ * @version 3.29.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -416,9 +416,12 @@ class LLMS_Quiz_Attempt extends LLMS_Abstract_Database_Store {
 	 * Retrieve a permalink for the attempt
 	 * @return   string
 	 * @since    3.9.0
-	 * @version  3.16.0
+	 * @version  3.29.0
 	 */
 	public function get_permalink() {
+		if ( ! $this->get_quiz() ) {
+			return '';
+		}
 		return add_query_arg( 'attempt_key', $this->get_key(), get_permalink( $this->get_quiz()->get( 'id' ) ) );
 	}
 
@@ -491,10 +494,12 @@ class LLMS_Quiz_Attempt extends LLMS_Abstract_Database_Store {
 	 * Retrieve a title-like string
 	 * @return   string
 	 * @since    3.16.0
-	 * @version  3.16.0
+	 * @version  3.26.3
 	 */
 	public function get_title() {
-		return sprintf( __( 'Quiz Attempt #%1$d by %2$s', 'lifterlms' ), $this->get( 'attempt' ), $this->get_student()->get_name() );
+		$student = $this->get_student();
+		$name = $student ? $this->get_student()->get_name() : apply_filters( 'llms_quiz_attempt_deleted_student_name', __( '[Deleted]', 'lifterlms' ) );
+		return sprintf( __( 'Quiz Attempt #%1$d by %2$s', 'lifterlms' ), $this->get( 'attempt' ), $name );
 	}
 
 	/**

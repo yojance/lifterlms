@@ -153,10 +153,6 @@ table.dad-list tr td:nth-child(2) {
 	width: 100%;
 	font-weight: bold;
 }
-.toplevel_page_lifterlms img {
-  height: 18px;
-  width: 18px;
-}
 .llms-lesson-list {
 	margin: 0;
 	ul {
@@ -446,4 +442,9 @@ a.llms-view-as {
 			margin: 0 0 10px;
 		}
 	}
+}
+
+.llms-error {
+	color: $color-red;
+	font-style: italic;
 }

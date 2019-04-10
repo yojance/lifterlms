@@ -1,13 +1,13 @@
 <?php
 /**
  * Tests for template functions
- * @group    LLMS_Functions_Templates
- * @since    3.15.0
- * @version  3.15.0
+ * @group LLMS_Functions_Templates
+ * @since 3.15.0
+ * @version 3.30.2
  */
 class LLMS_Functions_Templates extends LLMS_UnitTestCase {
 
-	private function get_output( $func, $params = array() ) {
+	public function get_output( $func, $params = array() ) {
 
 		ob_start();
 		call_user_func_array( $func, $params );

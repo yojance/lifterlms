@@ -1,10 +1,19 @@
 /**
  * LifterLMS Admin Panel Metabox Functions
- * @since    3.0.0
- * @version  3.21.0
+ *
+ * @since 3.0.0
+ * @since 3.30.0 Made autoenroll table sortable, added AJAX save for adding new courses.
+ * @version 3.30.0
  */
 ( function( $ ) {
 
+	/**
+	 * jQuery plugin to allow "collapsible" sections
+	 *
+	 * @return  jQuery object
+	 * @since   3.0.0
+	 * @version 3.29.0
+	 */
 	$.fn.llmsCollapsible = function() {
 
 		var $group = this;
@@ -14,7 +23,7 @@
 			var $parent = $( this ).closest( '.llms-collapsible' ),
 				$siblings = $parent.siblings( '.llms-collapsible' );
 
-			$parent.toggleClass( 'opened' );
+			$parent.toggleClass( 'opened' ).trigger( 'llms-collapsible-toggled' );
 
 			$parent.find( '.llms-collapsible-body' ).slideToggle( 400 );
 
@@ -278,7 +287,7 @@
 		 * Bind llms-editable metabox fields and related dom interactions
 		 * @return   void
 		 * @since    3.10.0
-		 * @version  3.10.0
+		 * @version  3.28.0
 		 */
 		this.bind_editables = function() {
 
@@ -331,6 +340,11 @@
 				}
 
 				$field.empty().append( $label ).append( $input );
+				if ( 'select' === type ) {
+					setTimeout( function() {
+						$input.trigger( 'change' );
+					}, 100 );
+				}
 
 			};
 
@@ -346,7 +360,6 @@
 				} else {
 					$fields = $btn.closest( '.llms-metabox-section' ).find( '[data-llms-editable]' );
 				}
-
 
 				$btn.remove();
 
@@ -411,14 +424,58 @@
 
 		/**
 		 * Actions for memberships
+		 *
+		 * @since 3.0.0
+		 * @since 3.30.0 Made autoenroll table sortable, added AJAX save for adding new courses.
+		 * @version 3.30.0
+		 *
 		 * @return   void
-		 * @since    3.0.0
-		 * @version  3.18.2
 		 */
 		this.bind_llms_membership = function() {
 
+			var $table = $( '.llms-mb-list._llms_content_table' );
+
+			/**
+			 * Hide/Show empty message header row depending on the number of rows in the tbody
+			 *
+			 * @since 3.30.0
+			 * @version 3.30.0
+			 *
+			 * @return void
+			 */
+			function toggle_header_row() {
+
+				var $rows = $table.find( 'tbody tr' );
+				if ( 1 === $rows.length ) {
+					$rows.first().show();
+				} else {
+					$rows.first().hide();
+				}
+			}
+
+			/**
+			 * Retrieve an array of course IDs in the table.
+			 *
+			 * @since 3.30.0
+			 * @version 3.30.0
+			 *
+			 * @return array
+			 */
+			function get_course_ids() {
+
+				var courses = [];
+				$table.find( 'tbody tr a[href="#llms-course-remove"]' ).each( function() {
+					courses.push( $( this ).attr( 'data-id' ) );
+				} );
+				return courses;
+
+			}
+
+			// On init, toggle the header row visibility.
+			toggle_header_row();
+
 			// remove auto-enroll course
-			$( 'a[href="#llms-course-remove"]' ).on( 'click', function( e ) {
+			$table.on( 'click', 'a[href="#llms-course-remove"]', function( e ) {
 
 				e.preventDefault();
 
@@ -445,6 +502,7 @@
 							$row.fadeOut( 200 );
 							setTimeout( function() {
 								$row.remove();
+								toggle_header_row();
 							}, 400 );
 
 						} else {
@@ -460,7 +518,7 @@
 			} );
 
 			// bulk enroll all members into a course
-			$( 'a[href="#llms-course-bulk-enroll"]' ).on( 'click', function( e ) {
+			$table.on( 'click', 'a[href="#llms-course-bulk-enroll"]', function( e ) {
 
 				e.preventDefault();
 
@@ -500,13 +558,86 @@
 
 			} );
 
+			// Add an item to the autoenroll table on select.
+			$( '#_llms_auto_enroll' ).on( 'change', function() {
+
+				var id = $( this ).val(),
+					title = $( this ).find( 'option[value="' + $( this ).val() + '"]').text();
+
+				// If there's no ID
+				if ( ! id ) {
+					return;
+				// Prevent Dupes.
+				} else if ( -1 !== get_course_ids().indexOf( id ) ) {
+
+					alert( LLMS.l10n.replace( '"%s" is already in the course list.', { '%s': title } ) )
+
+					// reset the select field.
+					$( this ).val( '' ).trigger( 'change' );
+
+					return;
+
+				}
+
+				var $table = $( '.llms-mb-list._llms_content_table' );
+					$tr = $( '<tr />' );
+
+				$tr.append( '<td><span class="llms-drag-handle" style="color:#999;"><i class="fa fa-ellipsis-v" aria-hidden="true" style="margin-right:2px;"></i><i class="fa fa-ellipsis-v" aria-hidden="true"></i></span></td>' );
+				$tr.append( '<td><a href="' + window.llms.admin_url + 'post.php?action=edit&post=' + id + '">' + title + '</a></td>' );
+				$tr.append( '<td><a class="llms-button-danger small" data-id="' + id + '" href="#llms-course-remove" style="float:right;">' + LLMS.l10n.translate( 'Remove course' ) + '</a><a class="llms-button-secondary small" data-id="' + id + '" href="#llms-course-bulk-enroll" style="float:right;">' + LLMS.l10n.translate( 'Enroll All Members' ) + '</a></td>' );
+
+				// append the element to the table.
+				$table.find('table tbody' ).append( $tr );
+
+				// reset the select field.
+				$( this ).val( '' ).trigger( 'change' );
+
+				// Show the header row.
+				toggle_header_row();
+
+				// trigger a save event.
+				$table.trigger( 'llms-save-autoenroll-courses' );
+
+			} );
+
+			// Make autoenrollment table sortable.
+			$table.find( 'table tbody' ).sortable( {
+				handle: '.llms-drag-handle',
+				// Save order on stop.
+				stop: function( event, ui ) {
+					ui.item.closest( '.llms-mb-list' ).trigger( 'llms-save-autoenroll-courses' );
+				},
+			} );
+
+			// Save courses & course order.
+			$table.on( 'llms-save-autoenroll-courses', function() {
+
+				var $container = $( this );
+
+				LLMS.Spinner.start( $container );
+
+				window.LLMS.Ajax.call( {
+					data: {
+						action: 'llms_save_membership_autoenroll_courses',
+						courses: get_course_ids(),
+					},
+					error: function( jqxhr, code, error_msg ) {
+						alert( error_msg );
+					},
+					complete: function() {
+						LLMS.Spinner.stop( $container );
+					},
+				} );
+
+			} );
+
 		};
 
 		/**
 		 * Actions for ORDERS
 		 * @return   void
 		 * @since    3.0.0
-		 * @version  3.10.0
+		 * @version  3.28.0
 		 */
 		this.bind_llms_order = function() {
 
@@ -596,16 +727,14 @@
 					var $field = $( 'input[name="' + gateway_data[ field ].name + '"]' ),
 						$wrap = $field.closest( '.llms-metabox-field' );
 
-					// always clear the value when switching
-					// ensures that outdated data is removed from the DB
-					$field.attr( 'value', '' );
-
 					// if the field is enabled show it the field and, if we're switching back to the originally selected
 					// gateway, reload the value from the dom
 					if ( gateway_data[ field ].enabled ) {
 
 						$wrap.show();
 						$field.attr( 'required', 'required' );
+						$field.removeAttr( 'disabled' );
+
 						if ( gateway === $select.attr( 'data-original-value') ) {
 							$field.val( $wrap.attr( 'data-llms-editable-value' ) );
 						}
@@ -614,7 +743,12 @@
 					// this will ensure it gets updated in the database
 					} else {
 
+						// always clear the value when switching
+						// ensures that outdated data is removed from the DB
+						$field.attr( 'value', '' );
+
 						$field.removeAttr( 'required' );
+						// $field.attr( 'disabled', 'disabled' );
 						$wrap.hide();
 
 					}

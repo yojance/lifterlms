@@ -2,8 +2,11 @@
 /**
  * Unit Test Case with tests and utilities specific to testing LifterLMS Shortcodes
  * @since    3.24.1
- * @version  3.24.3
+ * @version  3.30.2
  */
+
+require_once 'class-llms-unit-test-case.php';
+
 class LLMS_ShortcodeTestCase extends LLMS_UnitTestCase {
 
 	/**
@@ -12,7 +15,7 @@ class LLMS_ShortcodeTestCase extends LLMS_UnitTestCase {
 	 */
 	public $class_name = '';
 
-	protected function assertOutputEquals( $expect, $shortcode ) {
+	protected function assertShortcodeOutputEquals( $expect, $shortcode ) {
 
 		ob_start();
 		echo do_shortcode( $shortcode );

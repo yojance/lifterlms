@@ -1,10 +1,19 @@
 <?php
+/**
+ * LifterLMS Admin Course Builder
+ *
+ * @since 3.13.0
+ * @version 3.30.0
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * LifterLMS Admin Course Builder
- * @since    3.13.0
- * @version  3.24.2
+ * LLMS_Admin_Builder class.
+ *
+ * @since 3.13.0
+ * @since 3.30.0 Fixed issues related to custom field sanitization.
+ * @version 3.30.0
  */
 class LLMS_Admin_Builder {
 
@@ -543,7 +552,7 @@ if ( ! empty( $active_post_lock ) ) {
 	 * @param    array     $data  array of lesson ids
 	 * @return   array
 	 * @since    3.16.0
-	 * @version  3.17.0
+	 * @version  3.27.0
 	 */
 	private static function process_detachments( $data ) {
 
@@ -558,7 +567,7 @@ if ( ! empty( $active_post_lock ) ) {
 
 			$type = get_post_type( $id );
 
-			$post_types = apply_filters( 'llms_builder_detachable_post_types', array( 'lesson', 'llms_quiz' ) );
+			$post_types = apply_filters( 'llms_builder_detachable_post_types', array( 'lesson', 'llms_question', 'llms_quiz' ) );
 			if ( ! is_numeric( $id ) || ! in_array( $type, $post_types ) ) {
 				array_push( $ret, $res );
 				continue;
@@ -573,6 +582,8 @@ if ( ! empty( $active_post_lock ) ) {
 			if ( 'lesson' === $type ) {
 				$post->set( 'parent_course', '' );
 				$post->set( 'parent_section', '' );
+			} elseif ( 'llms_question' === $type ) {
+				$post->set( 'parent_id', '' );
 			} elseif ( 'llms_quiz' === $type ) {
 				$parent = $post->get_lesson();
 				if ( $parent ) {
@@ -699,12 +710,16 @@ if ( ! empty( $active_post_lock ) ) {
 
 	/**
 	 * Handle updating custom schema data
-	 * @param    string     $type       model type (lesson, quiz, etc...)
-	 * @param    obj        $post       LLMS_Post_Model object for the model being updated
-	 * @param    array      $post_data  assoc array of raw data to update the model with
-	 * @return   void
-	 * @since    3.17.0
-	 * @version  3.17.1
+	 *
+	 * @since 3.17.0
+	 * @since 3.30.0 Fixed typo preventing fields specifying a custom callback from working.
+	 * @since 3.30.0 Array fields will run field values through `sanitize_text_field()` instead of requiring a custom sanitization callback.
+	 * @version 3.30.0
+	 *
+	 * @param string $type Model type (lesson, quiz, etc...).
+	 * @param obj $post LLMS_Post_Model object for the model being updated.
+	 * @param array $post_data Assoc array of raw data to update the model with.
+	 * @return void
 	 */
 	public static function update_custom_schemas( $type, $post, $post_data ) {
 
@@ -736,9 +751,13 @@ if ( ! empty( $active_post_lock ) ) {
 						if ( isset( $post_data[ $attr ] ) ) {
 
 							if ( isset( $field['sanitize_callback'] ) ) {
-								$val = call_user_func( $field['sanitize_callback'], $val );
+								$val = call_user_func( $field['sanitize_callback'], $post_data[ $attr ] );
 							} else {
-								$val = sanitize_text_field( $post_data[ $attr ] );
+								if ( is_array( $post_data[ $attr ] ) ) {
+									$val = array_map( 'sanitize_text_field', $post_data[ $attr ] );
+								} else {
+									$val = sanitize_text_field( $post_data[ $attr ] );
+								}
 							}
 
 							$attr = isset( $field['attribute_prefix'] ) ? $field['attribute_prefix'] . $attr : $attr;
@@ -748,7 +767,7 @@ if ( ! empty( $active_post_lock ) ) {
 					}
 				}
 			}
-		}
+		}// End foreach().
 
 	}
 
