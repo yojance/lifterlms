@@ -37,6 +37,9 @@ class LLMS_Widget extends WP_Widget {
 	 * Echo Widget content.
 	 * This is called in widget()
 	 *
+     * @param array $args
+     * @param array $instance
+     *
 	 * @return void
 	 */
 	public function widget_contents( $args, $instance ) {}

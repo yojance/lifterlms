@@ -60,9 +60,12 @@ class LLMS_Widget_Course_Syllabus extends LLMS_Widget {
 	/**
 	 * Widget Content
 	 * Overrides parent class
+     *
+     * @param array $args
+     * @param array $instance
 	 *
 	 * @see  LLMS_Widget()
-	 * @return echo
+	 * @return void
 	 */
 	public function widget_contents( $args, $instance ) {
 		$collapse = ( isset( $instance['collapse'] ) ) ? $instance['collapse'] : 0;
