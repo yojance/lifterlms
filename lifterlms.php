@@ -507,7 +507,9 @@ final class LifterLMS {
 	 * Add Action Links
 	 * Settings action links
 	 *
-	 * @param array $links [array of links]
+	 * @param array $links Array of links
+	 *
+	 * @return array
 	 */
 	public function add_action_links( $links ) {
 

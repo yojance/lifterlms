@@ -115,12 +115,10 @@ class LLMS_Achievements {
 	/**
 	 * Award an achievement to a user
 	 * Calls trigger method passing arguments
-	 * @param  int $person_id        [ID of the current user]
-	 * @param  int $achievement      [Achievement template post ID]
+	 * @param  int $person_id        ID of the current user
+	 * @param  int $achievement_id      Achievement template post ID
 	 * @param  int $related_post_id  Post ID of the related engagement (eg lesson id)
 	 * @return void
-	 * @since    ??
-	 * @version  ??
 	 */
 	public function trigger_engagement( $person_id, $achievement_id, $related_post_id ) {
 		$achievement = $this->achievements['LLMS_Achievement_User'];

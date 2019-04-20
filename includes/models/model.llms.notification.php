@@ -274,10 +274,13 @@ class LLMS_Notification implements JsonSerializable {
 
 	/**
 	 * Set object variables
-	 * @param    string     $key  variable name
-	 * @param    mixed     $val  data
-	 * @since    3.8.0
+	 *
+	 * @param string $key variable name
+	 * @param mixed $val data
+	 *
+	 * @return bool
 	 * @version  3.8.0
+	 * @since    3.8.0
 	 */
 	public function set( $key, $val ) {
 

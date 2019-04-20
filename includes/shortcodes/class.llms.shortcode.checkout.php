@@ -124,7 +124,7 @@ class LLMS_Shortcode_Checkout {
 	 * @version 3.30.1
 	 *
 	 * @param array $atts shortcode atts from originating shortcode
-	 * @return void
+	 * @return void|string
 	 */
 	public static function output( $atts ) {
 

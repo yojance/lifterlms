@@ -98,7 +98,10 @@ class LLMS_Admin_Notices {
 
 	/**
 	 * Delete a notice by id
-	 * @param    string     $notice_id  unique id of the notice
+	 *
+	 * @param string $notice_id unique id of the notice
+	 * @param string $trigger
+	 *
 	 * @return   void
 	 * @since    3.0.0
 	 * @version  3.4.3

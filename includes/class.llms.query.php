@@ -65,7 +65,10 @@ class LLMS_Query {
 
 	/**
 	 * Add query variables
-	 * @param $vars [array of WP query variables available for query]
+	 *
+	 * @param array $vars Array of WP query variables available for query
+	 *
+	 * @return array
 	 */
 	public function add_query_vars( $vars ) {
 		foreach ( $this->get_query_vars() as $key => $var ) {

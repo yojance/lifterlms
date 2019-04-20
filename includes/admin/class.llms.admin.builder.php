@@ -232,8 +232,11 @@ class LLMS_Admin_Builder {
 
 	/**
 	 * Retrieve the HTML of a JS template
-	 * @param    [type]     $template  [description]
-	 * @return   [type]
+	 *
+	 * @param string $template
+	 * @param array $vars
+	 *
+	 * @return   bool|string
 	 * @since    3.16.0
 	 * @version  3.16.0
 	 */

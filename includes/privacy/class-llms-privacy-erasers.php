@@ -100,7 +100,12 @@ class LLMS_Privacy_Erasers extends LLMS_Privacy {
 
 	/**
 	 * Return export data to an exporter
-	 * @param    array      $messages  array of messages
+	 *
+	 * @param array $messages array of messages
+	 * @param bool $done
+	 * @param bool $removed
+	 * @param bool $retained
+	 *
 	 * @return   array
 	 * @since    3.18.0
 	 * @version  3.18.0
@@ -210,7 +215,7 @@ class LLMS_Privacy_Erasers extends LLMS_Privacy {
 	 * Erase student notification data by email address
 	 * @param    string     $email_address  email address of the user to retrieve data for
 	 * @param    int        $page           process page number
-	 * @return   [type]
+	 * @return   array
 	 * @since    3.18.0
 	 * @version  3.18.0
 	 */
@@ -275,9 +280,11 @@ class LLMS_Privacy_Erasers extends LLMS_Privacy {
 
 	/**
 	 * Erase student postmeta data by email address
-	 * @param    string     $email_address  email address of the user to retrieve data for
-	 * @param    int        $page           process page number
-	 * @return   [type]
+	 *
+	 * @param string $email_address email address of the user to retrieve data for
+	 * @param int $page process page number
+	 *
+	 * @return   array
 	 * @since    3.18.0
 	 * @version  3.18.0
 	 */

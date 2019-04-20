@@ -831,9 +831,13 @@ class LLMS_Access_Plan extends LLMS_Post_Model {
 
 	/**
 	 * Update the visibility term for the access plan
-	 * @param    string     $visibility  access plan name
-	 * @since    3.8.0
+	 *
+	 * @param string $visibility access plan name
+	 *
+	 * @return bool
 	 * @version  3.8.0
+	 *
+	 * @since    3.8.0
 	 */
 	public function set_visibility( $visibility ) {
 		return $this->set_terms( array( $visibility ), 'llms_access_plan_visibility', false );

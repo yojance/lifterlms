@@ -82,6 +82,9 @@ abstract class LLMS_Update {
 	/**
 	 * Checks progress of functions within the update
 	 * and triggers completion when finished
+	 *
+	 * @param array $progress
+	 *
 	 * @return   void
 	 * @since    3.0.0
 	 * @version  3.0.0
@@ -183,8 +186,10 @@ abstract class LLMS_Update {
 
 	/**
 	 * Schedules a function
-	 * @param    string     $func  function name / callable
-	 * @param    assay      $args  array of arguments to pass to the function
+	 *
+	 * @param string $func function name / callable
+	 * @param array $args array of arguments to pass to the function
+	 *
 	 * @return   void
 	 * @since    3.0.0
 	 * @version  3.0.0

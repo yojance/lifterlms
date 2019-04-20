@@ -106,12 +106,12 @@ class LLMS_Quiz_Legacy {
 
 
 	/**
-	* __isset function
-	*
-	* checks if metadata exists
-	*
-	* @param string $item
-	*/
+	 * Checks if metadata exists
+	 *
+	 * @param string $item
+	 *
+	 * @return bool
+	 */
 	public function __isset( $item ) {
 
 		return metadata_exists( 'post', $this->id, '_' . $item );

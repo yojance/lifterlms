@@ -116,7 +116,7 @@ class LLMS_Privacy extends LLMS_Abstract_Privacy {
 	/**
 	 * Get the privacy message sample content
 	 * This stub can be overloaded
-	 * @return   [type]
+	 * @return   string
 	 * @since    3.18.0
 	 * @version  3.18.0
 	 */

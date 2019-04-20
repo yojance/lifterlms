@@ -51,12 +51,12 @@ class User {
 	}
 
 	/**
-	* __isset function
-	*
-	* checks if metadata exists
-	*
-	* @param string $item
-	*/
+	 * checks if metadata exists
+	 *
+	 * @param string $item
+	 *
+	 * @return bool
+	 */
 	public function __isset( $item ) {
 
 		return metadata_exists( 'user', $this->id, 'llms_' . $item );
@@ -82,9 +82,12 @@ class User {
 	}
 
 	/**
-	 * set function
+	 * Set function
+	 *
 	 * @param string $key meta key
-	 * @param mixed  $value  [description]
+	 * @param mixed $value [description]
+	 *
+	 * @return bool|int
 	 */
 	public function set( $key, $value ) {
 

@@ -28,9 +28,12 @@ class LLMS_Student_Dashboard {
 
 	/**
 	 * Add endpoints to the LLMS_Query class to be automatically registered
-	 * @param    array     $endpoints  updated array of endpoints
-	 * @since    3.0.0
+	 *
+	 * @param array $endpoints updated array of endpoints
+	 *
+	 * @return array
 	 * @version  3.0.0
+	 * @since    3.0.0
 	 */
 	public function add_endpoints( $endpoints ) {
 

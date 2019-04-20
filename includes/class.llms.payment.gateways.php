@@ -72,6 +72,8 @@ class LLMS_Payment_Gateways {
 	 * @param    array     $gateways  array of gateways
 	 * @since    3.0.0
 	 * @version  3.0.0
+	 *
+	 * @return array
 	 */
 	public function add_core_gateways( $gateways ) {
 		$gateways[] = 'LLMS_Payment_Gateway_Manual';

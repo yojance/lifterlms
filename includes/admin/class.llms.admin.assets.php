@@ -295,6 +295,9 @@ class LLMS_Admin_Assets {
 
 	/**
 	 * Register Quill CSS & JS
+	 *
+	 * @param array $modules
+	 *
 	 * @return   void
 	 * @since    3.16.0
 	 * @version  3.17.8

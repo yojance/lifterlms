@@ -651,7 +651,6 @@ abstract class LLMS_Payment_Gateway {
 
 	/**
 	 * Log messages if logging is enabled
-	 * @param    mixed     $data  data to log (accepts any number of $data to be logged)
 	 * @return   void
 	 * @since    3.0.0
 	 * @version  3.0.0

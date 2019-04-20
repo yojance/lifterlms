@@ -25,10 +25,14 @@ class LLMS_Admin_Post_Table_Courses {
 
 	/**
 	 * Add course builder edit link
-	 * @param    array     $actions  existing actions
-	 * @param    obj       $post     WP_Post object
-	 * @since    3.13.0
+	 *
+	 * @param array $actions existing actions
+	 * @param WP_Post $post WP_Post object
+	 *
+	 * @return array
 	 * @version  3.13.1
+	 *
+	 * @since    3.13.0
 	 */
 	public function add_links( $actions, $post ) {
 

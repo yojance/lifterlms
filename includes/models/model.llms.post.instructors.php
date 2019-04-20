@@ -146,9 +146,13 @@ class LLMS_Post_Instructors {
 
 	/**
 	 * Save instructor information
-	 * @param    array      $instructors  array of course instructor information
-	 * @since    3.13.0
+	 *
+	 * @param array $instructors array of course instructor information
+	 *
+	 * @return array
 	 * @version  3.25.0
+	 *
+	 * @since    3.13.0
 	 */
 	public function set_instructors( $instructors = array() ) {
 

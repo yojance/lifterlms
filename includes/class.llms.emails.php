@@ -1,14 +1,16 @@
 <?php
 /**
-* LifterLMS Emails Class
-*
-* Manages finding the appropriate email
-*
-* @since    1.0.0
-* @version  3.8.0
-*/
+ * LifterLMS Emails Class
+ *
+ * Manages finding the appropriate email
+ *
+ * @since    1.0.0
+ * @version  3.8.0
+ */
 
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class LLMS_Emails {
 
@@ -26,14 +28,19 @@ class LLMS_Emails {
 
 	/**
 	 * Create instance of class
-	 * @var object self
+	 *
+	 * @return self
+	 *
 	 * @since    1.0.0
 	 * @version  1.0.0
+	 *
+	 * @var object self
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
 		}
+
 		return self::$_instance;
 	}
 
@@ -72,24 +79,27 @@ class LLMS_Emails {
 	 * @version  3.8.0
 	 */
 	public function get_button_style() {
-		$rules = apply_filters( 'llms_email_button_css', array(
+		$rules  = apply_filters( 'llms_email_button_css', array(
 			'background-color' => $this->get_css( 'button-background-color', false ),
-			'color' => $this->get_css( 'button-font-color', false ),
-			'display' => 'inline-block',
-			'padding' => '10px 15px',
-			'text-decoration' => 'none',
+			'color'            => $this->get_css( 'button-font-color', false ),
+			'display'          => 'inline-block',
+			'padding'          => '10px 15px',
+			'text-decoration'  => 'none',
 		) );
 		$styles = '';
 		foreach ( $rules as $rule => $style ) {
 			$styles .= sprintf( '%1$s:%2$s !important;', $rule, $style );
 		}
+
 		return $styles;
 	}
 
 	/**
 	 * Get css rules specific to the the email templates
-	 * @param    string     $rule  name of the css rule
-	 * @param    boolean    $echo  if true, echo the definition
+	 *
+	 * @param string $rule name of the css rule
+	 * @param boolean $echo if true, echo the definition
+	 *
 	 * @return   string
 	 * @since    3.8.0
 	 * @version  3.8.0
@@ -97,19 +107,19 @@ class LLMS_Emails {
 	public function get_css( $rule = '', $echo = true ) {
 
 		$css = apply_filters( 'llms_email_css', array(
-			'background-color' => '#f6f6f6',
-			'border-radius' => '3px',
-			'button-background-color' => '#2295ff',
-			'button-font-color' => '#ffffff',
-			'divider-color' => '#cecece',
-			'font-color' => '#222222',
-			'font-family' => 'sans-serif',
-			'font-size' => '15px',
-			'font-size-small' => '13px',
+			'background-color'         => '#f6f6f6',
+			'border-radius'            => '3px',
+			'button-background-color'  => '#2295ff',
+			'button-font-color'        => '#ffffff',
+			'divider-color'            => '#cecece',
+			'font-color'               => '#222222',
+			'font-family'              => 'sans-serif',
+			'font-size'                => '15px',
+			'font-size-small'          => '13px',
 			'heading-background-color' => '#2295ff',
-			'heading-font-color' => '#ffffff',
-			'main-color' => '#2295ff',
-			'max-width' => '580px',
+			'heading-font-color'       => '#ffffff',
+			'main-color'               => '#2295ff',
+			'max-width'                => '580px',
 		) );
 
 		if ( isset( $css[ $rule ] ) ) {
@@ -137,8 +147,10 @@ class LLMS_Emails {
 
 	/**
 	 * Retrieve a new instance of an email
-	 * @param    string     $id    email id
-	 * @param    array      $args  optional arguments to pass to the email
+	 *
+	 * @param string $id email id
+	 * @param array $args optional arguments to pass to the email
+	 *
 	 * @return   obj
 	 * @since    3.8.0
 	 * @version  3.8.0
@@ -155,6 +167,7 @@ class LLMS_Emails {
 		// otherwise return a generic email and set the ID to be the requested ID
 		$generic = new $emails['generic']( $args );
 		$generic->set_id( $id );
+
 		return $generic;
 
 	}
@@ -179,8 +192,9 @@ class LLMS_Emails {
 		$src = get_option( 'lifterlms_email_header_image', '' );
 		if ( is_numeric( $src ) ) {
 			$attachment = wp_get_attachment_image_src( $src, 'full' );
-			$src = $attachment ? $attachment[0] : '';
+			$src        = $attachment ? $attachment[0] : '';
 		}
+
 		return apply_filters( 'llms_email_header_image_src', $src );
 	}
 

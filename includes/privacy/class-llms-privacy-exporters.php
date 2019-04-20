@@ -308,7 +308,10 @@ class LLMS_Privacy_Exporters extends LLMS_Privacy {
 
 	/**
 	 * Return export data to an exporter
-	 * @param    array      $data  array of data
+	 *
+	 * @param array $data array of data
+	 * @param bool $done
+	 *
 	 * @return   array
 	 * @since    3.18.0
 	 * @version  3.18.0

@@ -74,7 +74,7 @@ class LLMS_Admin_AddOns {
 
 	/**
 	 * Retrieve remote json data
-	 * @return   null|WP_Error
+	 * @return   array|WP_Error
 	 * @since    3.5.0
 	 * @version  3.22.2
 	 */
@@ -163,7 +163,10 @@ class LLMS_Admin_AddOns {
 
 	/**
 	 * Retrieve products for a specific category
-	 * @param    string     $cat  category slug
+	 *
+	 * @param string $cat category slug
+	 * @param bool $include_bundles
+	 *
 	 * @return   array
 	 * @since    3.22.0
 	 * @version  3.22.0

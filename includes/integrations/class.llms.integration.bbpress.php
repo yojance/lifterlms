@@ -74,10 +74,14 @@ class LLMS_Integration_BBPress extends LLMS_Abstract_Integration {
 
 	/**
 	 * Register the custom course property with the LLMS_Course Model
-	 * @param    array     $props   default properties
-	 * @param    obj       $course  instance of the LLMS_Course
-	 * @since    3.12.0
+	 *
+	 * @param array $props default properties
+	 * @param LLMS_Course $course instance of the LLMS_Course
+	 *
+	 * @return array
 	 * @version  3.12.0
+	 *
+	 * @since    3.12.0
 	 */
 	public function add_course_props( $props, $course ) {
 		$props['bbp_forum_ids'] = 'array';
@@ -86,9 +90,13 @@ class LLMS_Integration_BBPress extends LLMS_Abstract_Integration {
 
 	/**
 	 * Add the membership restrictions metabox to bbPress forums on admin panel
-	 * @param    array     $post_types    array of existing post types
-	 * @since    3.0.0
+	 *
+	 * @param array $post_types array of existing post types
+	 *
+	 * @return array
 	 * @version  3.0.0
+	 *
+	 * @since    3.0.0
 	 */
 	public function add_membership_restrictions( $post_types ) {
 		$post_types[] = bbp_get_forum_post_type();

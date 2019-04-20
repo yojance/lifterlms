@@ -151,10 +151,12 @@ class LLMS_Admin_Analytics {
 	}
 
 	/**
-	* Output html for analytics tabs.
-	*
-	* @return void
-	*/
+	 * Output html for analytics tabs.
+	 *
+	 * @param $analytics
+	 *
+	 * @return void
+	 */
 	public static function output_html( $analytics ) {
 		echo $analytics;
 	}
@@ -164,7 +166,7 @@ class LLMS_Admin_Analytics {
 	 *
 	 * Loops though the lifterlms options array and outputs each field.
 	 *
-	 * @param array $settings Opens array to output
+	 * @param array $analytics Opens array to output
 	 *
 	 * @return bool
 	 */

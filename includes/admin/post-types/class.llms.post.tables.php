@@ -28,10 +28,14 @@ class LLMS_Admin_Post_Tables {
 
 	/**
 	 * Adds clone links to post types which support lifterlms post cloning
-	 * @param    array     $actions  existing actions
-	 * @param    obj       $post    WP_Post object
-	 * @since    3.3.0
+	 *
+	 * @param array $actions existing actions
+	 * @param WP_Post $post WP_Post object
+	 *
+	 * @return array
 	 * @version  3.13.0
+	 *
+	 * @since    3.3.0
 	 */
 	public function add_links( $actions, $post ) {
 
