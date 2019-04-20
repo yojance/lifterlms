@@ -3,7 +3,7 @@
  * LifterLMS AJAX Event Handler
  *
  * @since 1.0.0
- * @version 3.30.0
+ * @version [version]
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,8 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  * @since 3.30.0 Added `llms_save_membership_autoenroll_courses` method.
- * @version 3.30.0
- *
+ * @since [version] Fixed spelling errors.
  */
 class LLMS_AJAX_Handler {
 
@@ -41,7 +40,7 @@ class LLMS_AJAX_Handler {
 	}
 
 	/**
-	 * Add or remove a student from a course or memberhip
+	 * Add or remove a student from a course or membership
 	 * @since    3.0.0
 	 * @version  3.4.0
 	 */
@@ -87,7 +86,7 @@ class LLMS_AJAX_Handler {
 
 	/**
 	 * Queue a table export event
-	 * @param    array     $request  post data ($_REQUST)
+	 * @param    array     $request  post data ($_REQUEST)
 	 * @return   array
 	 * @since    3.15.0
 	 * @version  3.28.1
@@ -115,7 +114,7 @@ class LLMS_AJAX_Handler {
 
 	/**
 	 * Reload admin tables
-	 * @param    array     $request  post data ($_REQUST)
+	 * @param    array     $request  post data ($_REQUEST)
 	 * @return   array
 	 * @since    3.2.0
 	 * @version  3.2.0
@@ -149,10 +148,12 @@ class LLMS_AJAX_Handler {
 
 	/**
 	 * Store data for the instructors metabox
-	 * @param    [type]     $request  [description]
-	 * @return   [type]               [description]
-	 * @since    3.13.0
-	 * @version  3.13.0
+	 *
+	 * @since 3.13.0
+	 * @since [version] Fixed typos.
+	 *
+	 * @param array $request $_REQUEST object.
+	 * @return array
 	 */
 	public static function instructors_mb_store( $request ) {
 
@@ -161,7 +162,7 @@ class LLMS_AJAX_Handler {
 
 			return array(
 				'data' => array(),
-				'message' => __( 'Missing required paramters', 'lifterlms' ),
+				'message' => __( 'Missing required parameters', 'lifterlms' ),
 				'success' => false,
 			);
 
@@ -482,7 +483,7 @@ class LLMS_AJAX_Handler {
 	 * Start a Quiz Attempt
 	 * @param    array     $request  $_POST data
 	 *                               required:
-	 *                               	(string) attemptkey
+	 *                               	(string) attempt_key
 	 *                               or
 	 *                               	(int) quiz_id
 	 *                               	(int) lesson_id
@@ -578,7 +579,7 @@ class LLMS_AJAX_Handler {
 			return $err;
 		}
 
-		// record the answe
+		// record the answer
 		$attempt->answer_question( $question_id, $answer );
 
 		// get the next question
@@ -777,7 +778,7 @@ class LLMS_AJAX_Handler {
 	}
 
 	/**
-	 * Add or remove a student from a course or memberhip
+	 * Add or remove a student from a course or membership
 	 * @since    3.0.0
 	 * @version  3.4.0
 	 */

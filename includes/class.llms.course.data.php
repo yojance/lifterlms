@@ -1,13 +1,37 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+/**
+ * Query data about a course
+ *
+ * @since 3.15.0
+ * @version [version]
+ */
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Query data about a course
- * @since    3.15.0
- * @version  3.17.2
+ *
+ * @since 3.15.0
+ * @since [version] Explicitly define class properties.
  */
 class LLMS_Course_Data {
 
+	/**
+	 * @var LLMS_Course
+	 * @since 3.15.0
+	 */
+	public $course;
+
+	/**
+	 * @var int
+	 * @since 3.15.0
+	 */
+	public $course_id;
+
+	/**
+	 * @var array
+	 * @since 3.15.0
+	 */
 	protected $dates = array();
 
 	/**
@@ -68,7 +92,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * Set the dates pased on a date range period
+	 * Set the dates passed on a date range period
 	 * @param    string     $period  date range period
 	 * @return   void
 	 * @since    3.15.0
@@ -195,7 +219,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * retrive # of course enrollments within the period
+	 * retrieve # of course enrollments within the period
 	 * @param    string     $period  date period [current|previous]
 	 * @return   int
 	 * @since    3.15.0
@@ -221,7 +245,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * retrive # of engagements related to the course awarded within the period
+	 * retrieve # of engagements related to the course awarded within the period
 	 * @param    string     $type    engagement type [email|certificate|achievement]
 	 * @param    string     $period  date period [current|previous]
 	 * @return   int
@@ -249,7 +273,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * retrive # of lessons completed within the period
+	 * retrieve # of lessons completed within the period
 	 * @param    string     $period  date period [current|previous]
 	 * @return   int
 	 * @since    3.15.0
@@ -276,7 +300,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * retrive # of orders placed for the course within the period
+	 * retrieve # of orders placed for the course within the period
 	 * @param    string     $period  date period [current|previous]
 	 * @return   int
 	 * @since    3.15.0
@@ -296,7 +320,7 @@ class LLMS_Course_Data {
 	}
 
 	/**
-	 * retrive total amount of transactions related to orders for the course completed within the period
+	 * retrieve total amount of transactions related to orders for the course completed within the period
 	 * @param    string     $period  date period [current|previous]
 	 * @return   float
 	 * @since    3.15.0

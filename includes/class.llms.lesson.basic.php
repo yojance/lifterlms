@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 *
 * Basic lesson is the standard, single lesson.
 *
-* @author codeBOX
+* @deprecated [version]
 */
 class LLMS_Lesson_Basic extends LLMS_Lesson {
 
@@ -15,6 +15,12 @@ class LLMS_Lesson_Basic extends LLMS_Lesson {
 	 * @var int
 	 */
 	public $id;
+
+	/**
+	 * @var string
+	 * @since 1.0.0
+	 */
+	public $lesson_type;
 
 	/**
 	 * post object

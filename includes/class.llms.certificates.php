@@ -2,15 +2,19 @@
 /**
  * Certificates
  *
- * @see      LLMS()->certificates()
- * @since    1.0.0
- * @version  3.24.3
+ * @see LLMS()->certificates()
+ *
+ * @since 1.0.0
+ * @version [version]
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * LLMS_Certificates class
+ *
+ * @since 1.0.0
+ * @since [version] Explicitly define class properties.
  */
 class LLMS_Certificates {
 
@@ -19,6 +23,12 @@ class LLMS_Certificates {
 	 * @var  null
 	 */
 	protected static $_instance = null;
+
+	/**
+	 * @var LLMS_Certificate_User[]
+	 * @since 1.1.1
+	 */
+	public $certs = array();
 
 	/**
 	 * Instance singleton
@@ -58,8 +68,8 @@ class LLMS_Certificates {
 	 * Award a certificate to a user
 	 * Calls trigger method passing arguments
 	 * @param    int   $person_id        [ID of the current user]
-	 * @param    int   $achievement      [Achivement template post ID]
-	 * @param    int   $related_post_id  Post ID of the related engagment (eg lesson id)
+	 * @param    int   $achievement      [Achievement template post ID]
+	 * @param    int   $related_post_id  Post ID of the related engagement (eg lesson id)
 	 * @return   void
 	 * @since    1.0.0
 	 * @version  1.0.0
@@ -101,7 +111,7 @@ class LLMS_Certificates {
 	}
 
 	/**
-	 * Retrive an existing or generate a downloadable HTML file for a certificate
+	 * Retrieve an existing or generate a downloadable HTML file for a certificate
 	 * @param    int     $certificate_id  WP Post ID of the earned certificate
 	 * @param    bool    $use_cache       if true will check for existence of a cached version of the file first
 	 * @return   mixed                    WP_Error or full path to the generated export
@@ -222,7 +232,7 @@ class LLMS_Certificates {
 				// $header->replaceChild( $replacement['new'], $replacement['old'] );
 			}
 
-			// remove all remaining non sylesheet <links>
+			// remove all remaining non stylesheet <links>
 			$links = $dom->getElementsByTagName( 'link' );
 			while ( $links && $links->length ) {
 				$links->item( 0 )->parentNode->removeChild( $links->item( 0 ) );
